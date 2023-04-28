@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: ${IMAGE_API:?}
+    pull_policy: always
+
+  api:
+    image: ${IMAGE_API:?}
+    pull_policy: always
+
+    ports:
+        - "${API_PORT_EXTERNAL_DOCKER}:8000/tcp"
+
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
