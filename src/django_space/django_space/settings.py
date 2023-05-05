@@ -2,8 +2,8 @@ from pathlib import Path
 
 from logrich.logger_ import errlog, log  # noqa
 
-from src.django_space.config import config
 from src.auth.config import config as fastapi_config
+from src.django_space.config import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,11 +12,11 @@ SECRET_KEY = config.DJANGO_SECRET_KEY
 DEBUG = fastapi_config.DEBUG
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#time-format
-TIME_INPUT_FORMATS=[
+TIME_INPUT_FORMATS = [
     "%H:%M",  # '14:30'
 ]
 
-USE_L10N=True
+USE_L10N = True
 
 ALLOWED_HOSTS = ["*"]
 

@@ -30,6 +30,5 @@ class Log(models.Model):
         # https://docs.djangoproject.com/en/4.2/ref/models/options/#unique-together
         constraints = [
             # ограничим каждый показатель только одним значением в минуту
-            UniqueConstraint(fields=['ind_id', 'date'], name='unique_log')
+            UniqueConstraint(fields=["ind_id", "date"], name="unique_log")
         ]
-
