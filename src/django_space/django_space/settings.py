@@ -11,6 +11,13 @@ SECRET_KEY = config.DJANGO_SECRET_KEY
 
 DEBUG = fastapi_config.DEBUG
 
+# https://docs.djangoproject.com/en/4.2/ref/settings/#time-format
+TIME_INPUT_FORMATS=[
+    "%H:%M",  # '14:30'
+]
+
+USE_L10N=True
+
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -80,7 +87,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-RU"
 
 TIME_ZONE = "UTC"
 
