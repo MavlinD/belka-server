@@ -5,12 +5,12 @@ from logrich.logger_ import log  # noqa
 from pydantic import BaseModel
 
 from src.auth.assets import APIRouter
-from src.auth.schemas.ads import AdCreate, AdScheme, AdUpdate
+from src.auth.schemas.indicators import IndicatorCreate, IndicatorScheme, IndicatorUpdate
 from src.auth.schemas.scheme_tools import get_qset
-from src.auth.users.ads_manager import AdManager
+from src.auth.users.indicator_manager import IndicatorManager
 from src.auth.users.dependencies import get_current_active_user
-from src.auth.users.init import get_ads_manager
-from src.django_space.ads.models import Ads
+from src.auth.users.init import get_indicator_manager
+from src.django_space.indicators.models import Indicator
 from src.django_space.django_space.adapters import Page, retrieve_ad
 from src.django_space.django_space.routers.jwt_obtain import unauthorized_responses
 
@@ -19,7 +19,7 @@ router = APIRouter()
 
 @router.put(
     "/create",
-    response_model=AdScheme,
+    response_model=IndicatorScheme,
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(get_current_active_user)],
     responses={
@@ -27,9 +27,9 @@ router = APIRouter()
     },
 )
 async def create_ad(
-    ad: AdCreate,
-    ad_manager: AdManager = Depends(get_ads_manager),
-) -> AdScheme:
+    ad: IndicatorCreate,
+    ad_manager: IndicatorManager = Depends(get_indicator_manager),
+) -> IndicatorScheme:
     """Создать или вернуть объявление"""
     resp = await ad_manager.create(ad_create=ad)
     return resp
@@ -37,7 +37,7 @@ async def create_ad(
 
 @router.patch(
     "/{ad_attr:str}",
-    response_model=AdScheme,
+    response_model=IndicatorScheme,
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(get_current_active_user)],
     responses={
@@ -45,46 +45,46 @@ async def create_ad(
     },
 )
 async def update_ad(
-    payload: AdUpdate,
-    ad: Ads = Depends(retrieve_ad),
-    ad_manager: AdManager = Depends(get_ads_manager),
-) -> AdScheme:
+    payload: IndicatorUpdate,
+    ad: Indicator = Depends(retrieve_ad),
+    ad_manager: IndicatorManager = Depends(get_indicator_manager),
+) -> IndicatorScheme:
     """Обновить объявление по имени или id"""
     ad = await ad_manager.update(ad=ad, payload=payload.dict(exclude_unset=True, exclude_none=True))
-    resp = await AdScheme.from_orms(ad)
+    resp = await IndicatorScheme.from_orms(ad)
     return resp
 
 
 @router.get(
     "/list",
-    response_model=Page[AdScheme],
+    response_model=Page[IndicatorScheme],
     status_code=status.HTTP_200_OK,
     responses={
         **unauthorized_responses,
     },
 )
 async def read_ads(
-    ad_manager: AdManager = Depends(get_ads_manager),
+    ad_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> AbstractPage[BaseModel]:
     """Получить список объявлений"""
-    ads = await ad_manager.get_list_ads()
-    resp = await get_qset(qset=ads, model=AdScheme)
+    indicators = await ad_manager.get_list_ads()
+    resp = await get_qset(qset=indicators, model=IndicatorScheme)
     return paginate_(list(resp))
 
 
 @router.get(
     "/{ad_attr:str}",
-    response_model=AdScheme,
+    response_model=IndicatorScheme,
     status_code=status.HTTP_200_OK,
     responses={
         **unauthorized_responses,
     },
 )
 async def read_ad(
-    ad: Ads = Depends(retrieve_ad),
-) -> AdScheme:
+    ad: Indicator = Depends(retrieve_ad),
+) -> IndicatorScheme:
     """Получить объявление по имени или id"""
-    resp = await AdScheme.from_orms(ad)
+    resp = await IndicatorScheme.from_orms(ad)
     return resp
 
 
@@ -100,8 +100,8 @@ async def read_ad(
     },
 )
 async def delete_ad(
-    ad: Ads = Depends(retrieve_ad),
-    ad_manager: AdManager = Depends(get_ads_manager),
+    ad: Indicator = Depends(retrieve_ad),
+    ad_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> None:
     """Удалить объявление по id"""
     await ad_manager.delete(ad)

@@ -8,8 +8,8 @@ from logrich.logger_assets import console  # noqa
 from pydantic import EmailStr
 
 from src.auth.config import config
-from src.django_space.ads.config import config as ad_config
-from src.django_space.ads.models import Ads, Image
+from src.django_space.indicators.config import config as ad_config
+from src.django_space.indicators.models import Indicator, Log
 
 
 async def create_user(

@@ -5,7 +5,7 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
-from src.auth.tests.ads.conftest import insert_fake_ads, insert_fake_images
+from src.auth.tests.indicators.conftest import insert_fake_ads, insert_fake_images
 
 skip = False
 # skip = True

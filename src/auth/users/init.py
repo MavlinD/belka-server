@@ -1,8 +1,8 @@
 from datetime import timedelta
 
 from src.auth.config import config
-from src.auth.users.ads_manager import AdManager
-from src.auth.users.image_manager import ImageManager
+from src.auth.users.indicator_manager import IndicatorManager
+from src.auth.users.log_manager import LogManager
 from src.auth.users.security.jwt_actions import JWTStrategy
 from src.auth.users.user_manager import UserManager
 
@@ -12,14 +12,14 @@ async def get_user_manager() -> UserManager:
     return UserManager()
 
 
-async def get_ads_manager() -> AdManager:
+async def get_indicator_manager() -> IndicatorManager:
     """group manager object"""
-    return AdManager()
+    return IndicatorManager()
 
 
-async def get_image_manager() -> ImageManager:
+async def get_log_manager() -> LogManager:
     """group manager object"""
-    return ImageManager()
+    return LogManager()
 
 
 def get_jwt_strategy() -> JWTStrategy:

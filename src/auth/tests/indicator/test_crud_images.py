@@ -6,7 +6,7 @@ from logrich.logger_ import log  # noqa
 from starlette import status
 
 from src.auth.conftest import Routs
-from src.django_space.ads.config import config
+from src.django_space.indicators.config import config
 
 skip = False
 # skip = True
@@ -49,7 +49,7 @@ async def test_create_ad_with_over_limit_images(
     client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_ad: Callable
 ) -> None:
     """Тест прикрепления свыше лимита изображений."""
-    for image in range(0, config.AD_IMAGE_MAX_AMOUNT + 2):
+    for image in range(0, config.IND_NAME_MAX_LENGTH + 2):
         path_image = f"test-image-{image}.png"
         resp = await client.put(
             routes.request_create_image(ad_attr=1),

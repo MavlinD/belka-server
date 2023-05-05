@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "src.django_space.ads.apps.AdsConfig",
+    "src.django_space.indicators.apps.IndicatorsConfig",
 ]
 
 MIDDLEWARE = [

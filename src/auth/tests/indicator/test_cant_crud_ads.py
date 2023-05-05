@@ -5,7 +5,7 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
-from src.django_space.ads.config import config
+from src.django_space.indicators.config import config
 
 skip = False
 # skip = True

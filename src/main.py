@@ -56,11 +56,11 @@ def run_app() -> FastAPI:
     try:
         from src.django_space.django_space.asgi import django_app
         from src.django_space.django_space.routers import init_base_router
-        from src.django_space.ads.routers import init_ads_router
+        from src.django_space.indicators.routers import init_router as init_indicator_router
 
         # start django urls
         init_base_router(app)
-        init_ads_router(app)
+        init_indicator_router(app)
 
         # order important!
         app.mount("/static", StaticFiles(directory="src/auth/static"), name="open-api")

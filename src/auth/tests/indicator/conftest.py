@@ -6,8 +6,8 @@ from fastapi import FastAPI, HTTPException
 from logrich.logger_ import log  # noqa
 
 from src.auth.tests.app.test_tools import create_ad, create_image
-from src.django_space.ads.config import config
-from src.django_space.ads.models import Ads, Image
+from src.django_space.indicators.config import config
+from src.django_space.indicators.models import Indicator, Log
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ async def insert_fake_images(amount_ads: int) -> None:
     """fill db with fake data - Images"""
     fake = Faker()
     for i in range(1, amount_ads + 2):
-        for image in range(config.AD_IMAGE_MAX_AMOUNT):
+        for image in range(config.IND_NAME_MAX_LENGTH):
             path = fake.file_path(depth=3, category="image")
             is_main = False
             if image == 1:

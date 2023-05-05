@@ -12,7 +12,6 @@ __version__ = config.API_VERSION
 
 def init_base_router(app: FastAPI) -> None:
     """order is important !!!"""
-
     app.include_router(jwt_obtain, prefix=f"{prefix}{__version__}/auth", tags=["JWT"])
     app.include_router(jwt_refresh, prefix=f"{prefix}{__version__}/auth", tags=["JWT"])
     app.include_router(jwt_verify, prefix=f"{prefix}{__version__}/auth", tags=["JWT"])

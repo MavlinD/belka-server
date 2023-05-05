@@ -45,6 +45,8 @@ class Settings(BaseSettings):
 
     API_VERSION: str = "v2"
     API_PATH_PREFIX: str = "/api/"
+    API_PORT_INTERNAL: int
+    API_HOSTNAME: str = "0.0.0.0"
 
     DEBUG: bool = False
     TESTING: bool = False

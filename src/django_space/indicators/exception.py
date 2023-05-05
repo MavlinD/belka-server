@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from logrich.logger_ import log  # noqa
 from starlette import status
 
-from src.django_space.ads.models import Ads
+from src.django_space.indicators.models import Ads
 
 
 class FastAPIAdsException(HTTPException):

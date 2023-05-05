@@ -8,21 +8,21 @@ from fastapi import Body
 from logrich.logger_ import log  # noqa
 from pydantic import BaseModel, Field
 
-from src.django_space.ads.models import Image
+from src.django_space.indicators.models import Log
 
 
-class ImageCreate(BaseModel):
-    """Схема для создания изображения"""
+class LogCreate(BaseModel):
+    """Схема для создания записи лога"""
 
     path: str = Body(max_length=256)
     is_main: Annotated[bool, Field(title="Признак главного изображения")] = False
 
 
-class ImageScheme(ModelSchema):
-    """Общая схема объявления"""
+class LogScheme(ModelSchema):
+    """Общая схема лога"""
 
     class Config:
-        model = Image
+        model = Log
 
     @classmethod
     async def from_orms(cls, v):
