@@ -1,4 +1,3 @@
-from asgiref.sync import sync_to_async
 from fastapi import Depends, status
 from fastapi_pagination import paginate as paginate_
 from fastapi_pagination.bases import AbstractPage
@@ -36,8 +35,8 @@ async def create_indicator(
     indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> IndicatorScheme:
     """Создать или вернуть показатель"""
-    ind = await indicator_manager.create(payload=indicator)
-    resp = await IndicatorScheme.from_orms(ind)
+    indicator = await indicator_manager.create(payload=indicator)
+    resp = await IndicatorScheme.from_orms(indicator)
     return resp
 
 
@@ -52,12 +51,12 @@ async def create_indicator(
 )
 async def update_indicator(
     payload: IndicatorUpdate,
-    ind: Indicator = Depends(retrieve_indicator),
+    indicator: Indicator = Depends(retrieve_indicator),
     indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> IndicatorScheme:
     """Обновить показатель по имени или id"""
-    ind = await indicator_manager.update(ind=ind, payload=payload)
-    resp = await IndicatorScheme.from_orms(ind)
+    indicator = await indicator_manager.update(indicator=indicator, payload=payload)
+    resp = await IndicatorScheme.from_orms(indicator)
     return resp
 
 
@@ -87,10 +86,10 @@ async def read_indicators(
     },
 )
 async def read_indicator(
-    ind: Indicator = Depends(retrieve_indicator),
+    indicator: Indicator = Depends(retrieve_indicator),
 ) -> IndicatorScheme:
     """Получить показатель по имени или id"""
-    resp = await IndicatorScheme.from_orms(ind)
+    resp = await IndicatorScheme.from_orms(indicator)
     return resp
 
 
@@ -101,7 +100,7 @@ async def read_indicator(
     responses={
         **unauthorized_responses,
         status.HTTP_404_NOT_FOUND: {
-            "description": "Объявление не найдено.",
+            "description": "Показатель не найден.",
         },
     },
 )

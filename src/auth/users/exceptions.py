@@ -18,8 +18,8 @@ class UserNotExists(FastAPIUsersException):
 
 
 class IndicatorNotExists(FastAPIUsersException):
-    def __init__(self, ad: str) -> None:
-        self.detail = f"Объявление <{ad}> не существует"
+    def __init__(self, indicator: str) -> None:
+        self.detail = f"Индикатор <{indicator}> не существует"
         self.status_code = status.HTTP_404_NOT_FOUND
 
 

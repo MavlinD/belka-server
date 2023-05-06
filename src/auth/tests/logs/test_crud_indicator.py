@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import Callable
 
 import pytest
@@ -6,18 +5,22 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
-from src.auth.tests.app.test_tools import create_log
 from src.django_space.indicators.config import config
 
-# skip = False
-skip = True
+skip = False
+# skip = True
 reason = "Temporary off"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_create_indicator(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
+async def test_create_indicator(
+    client: AsyncClient,
+    routes: Routs,
+    user_active_auth_headers: Headers,
+    add_test_indicator: Callable,
+) -> None:
     """Тест создания показателя"""
     name_indicator = "тестовый индикатор"
     resp = await client.put(
@@ -29,10 +32,10 @@ async def test_create_indicator(client: AsyncClient, routes: Routs, user_active_
     data = resp.json()
     log.debug("ответ на создание показателя", o=data)
     assert resp.status_code == 201
-    # assert data.get("id") == 2
+    assert data.get("id") == 2
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_read_indicator(
     client: AsyncClient,
@@ -47,10 +50,13 @@ async def test_read_indicator(
     assert resp.status_code == 200
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_update_indicator(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_indicator: Callable
+    client: AsyncClient,
+    routes: Routs,
+    user_active_auth_headers: Headers,
+    add_test_indicator: Callable,
 ) -> None:
     """Тест обновления показателя, частичное обновление"""
     name_indicator = "Калифорний"
@@ -68,10 +74,13 @@ async def test_update_indicator(
     assert data.get("unit") == config.TEST_IND_UNIT
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_list_indicators(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_indicator: Callable
+    client: AsyncClient,
+    routes: Routs,
+    user_active_auth_headers: Headers,
+    add_test_indicator: Callable,
 ) -> None:
     """Тест списка показателей"""
     name_indicator = "второй тестовый показатель"
@@ -91,10 +100,13 @@ async def test_list_indicators(
     assert len(data.get("items")) == 2
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_delete_indicator(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_indicator: Callable
+    client: AsyncClient,
+    routes: Routs,
+    user_active_auth_headers: Headers,
+    add_test_indicator: Callable,
 ) -> None:
     """Тест удаления показателя"""
     name_indicator = "Сера"
