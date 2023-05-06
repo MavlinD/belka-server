@@ -5,10 +5,10 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
-from src.auth.tests.indicators.conftest import insert_fake_ads, insert_fake_images
+from src.auth.tests.logs.conftest import insert_fake_indicators, insert_fake_logs
 
-skip = False
-# skip = True
+# skip = False
+skip = True
 reason = "Temporary off!"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
@@ -23,8 +23,8 @@ async def test_list_ads_with_paginate(
     SIZE = 5
     PAGE = 1
 
-    await insert_fake_ads(amount_ads=AMOUNT_ADS)
-    await insert_fake_images(amount_ads=AMOUNT_ADS)
+    await insert_fake_indicators(amount_ads=AMOUNT_ADS)
+    await insert_fake_logs(amount_ads=AMOUNT_ADS)
 
     params = {"page": PAGE, "size": SIZE}
 

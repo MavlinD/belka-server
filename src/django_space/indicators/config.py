@@ -3,7 +3,6 @@ from functools import lru_cache
 from dotenv import load_dotenv
 from logrich.logger_ import log  # noqa
 from pydantic import BaseSettings, Field
-from pydantic.schema import Decimal
 
 load_dotenv()
 
@@ -26,16 +25,10 @@ class Settings(BaseSettings):
     IND_DESC_MIN_LENGTH: int = 3
     IND_DESC_MAX_LENGTH: int = 1000
 
-    # ограничения на стоимость объявления
-    IND_MAX_PRICE_DIGITS: int = 9
-
     # тестовое объявление
-    TEST_IND_NAME: str = "Продам славянский шкаф"
-    TEST_IND_PRICE: Decimal | None = Field(15730.45, decimal_places=2)
-    TEST_IND_DESC: str = "Прекрасный шкаф светлого дерева"
-
-    # тестовое изображение
-    TEST_IMAGE_PATH: str = "test-image.png"
+    TEST_IND_NAME: str = "Адамантий"
+    TEST_IND_UNIT: str = "мг/см.куб"
+    TEST_IND_DESC: str = "Подозрительный элемент"
 
     class Config:
         env_file_encoding = "utf-8"

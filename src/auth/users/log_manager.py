@@ -16,7 +16,7 @@ class LogManager:
         return await sync_to_async(LogScheme.from_orm)(image)
 
     async def update(self, image: Log, payload: dict) -> Log:
-        """update ad"""
+        """update ind"""
 
         await self.objects.filter(pk=image.pk).aupdate(**payload)
         image: Log = await self.get_one_by_uniq_attr(image_id=image.pk)
@@ -24,11 +24,11 @@ class LogManager:
         return image
 
     async def delete(self, ad: Log) -> None:
-        """remove ad"""
+        """remove ind"""
         await self.objects.filter(pk=ad.pk).adelete()
 
     async def get_one_by_uniq_attr(self, image_id: int) -> Log | None:
-        """get one ad by uniq attr"""
+        """get one ind by uniq attr"""
         image_in_db = await self.objects.filter(pk=image_id).afirst()
         if not image_in_db:
             raise LogNotExists(image=image_id)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Annotated
 
 from asgiref.sync import sync_to_async
@@ -14,8 +15,9 @@ from src.django_space.indicators.models import Log
 class LogCreate(BaseModel):
     """Схема для создания записи лога"""
 
-    path: str = Body(max_length=256)
-    is_main: Annotated[bool, Field(title="Признак главного изображения")] = False
+    val: float = Body(ge=0, title="Значение показателя")
+    date: Annotated[datetime, Field(title="Период регистрации")] = False
+    # date: Annotated[bool, Field(title="Признак главного изображения")] = False
 
 
 class LogScheme(ModelSchema):

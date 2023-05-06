@@ -8,7 +8,7 @@ from logrich.logger_assets import console  # noqa
 from pydantic import EmailStr
 
 from src.auth.config import config
-from src.django_space.indicators.config import config as ad_config
+from src.django_space.indicators.config import config as indicator_config
 from src.django_space.indicators.models import Indicator, Log
 
 
@@ -37,24 +37,27 @@ async def create_user(
     return user
 
 
-async def create_ad(
-    name: str = ad_config.TEST_AD_NAME,
-    price: decimal = ad_config.TEST_AD_PRICE,
-    desc: str = ad_config.TEST_AD_DESC,
-) -> Ads:
-    """create ad"""
-    ad_model = Ads
-    ad = await sync_to_async(ad_model.objects.get_or_create)(
+async def create_indicator(
+    name: str = indicator_config.TEST_IND_NAME,
+    unit: str = indicator_config.TEST_IND_UNIT,
+    desc: str = indicator_config.TEST_IND_DESC,
+) -> Indicator:
+    """create indicator"""
+    indicator_model = Indicator
+    ind = await sync_to_async(indicator_model.objects.get_or_create)(
         name=name,
-        price=price,
+        unit=unit,
         desc=desc,
     )
-    return ad
+    return ind
 
 
-async def create_image(path: str = ad_config.TEST_IMAGE_PATH, ads_id: int = 1, is_main: bool = False) -> Image:
-    """create ad"""
-    ad = await Ads.objects.filter(pk=ads_id).afirst()
-    image_model = Image
-    image = await sync_to_async(image_model.objects.get_or_create)(path=path, ads_id=ad, is_main=is_main)
-    return image
+async def create_log() -> Log:
+    # async def create_log(path: str = indicator_config.TEST_IMAGE_PATH, ads_id: int = 1, is_main: bool = False)
+    # -> Log:
+    """create ind"""
+    ...
+    # indicator = await Indicator.objects.filter(pk=ads_id).afirst()
+    # image_model = Log
+    # image = await sync_to_async(image_model.objects.get_or_create)(path=path, ads_id=indicator, is_main=is_main)
+    # return image

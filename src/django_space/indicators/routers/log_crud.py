@@ -4,16 +4,16 @@ from logrich.logger_ import log  # noqa
 from src.auth.assets import APIRouter
 from src.auth.schemas.log import LogCreate, LogScheme
 from src.auth.users.dependencies import get_current_active_user
-from src.auth.users.log_manager import LogManager
 from src.auth.users.init import get_log_manager
-from src.django_space.indicators.config import config
-from src.django_space.indicators.models import Indicator, Log
+from src.auth.users.log_manager import LogManager
 from src.django_space.django_space.adapters import (
     LogLimitChecker,
-    retrieve_ad,
+    retrieve_indicator,
     retrieve_log,
 )
 from src.django_space.django_space.routers.jwt_obtain import unauthorized_responses
+from src.django_space.indicators.config import config
+from src.django_space.indicators.models import Indicator, Log
 
 router = APIRouter()
 
@@ -34,7 +34,7 @@ router = APIRouter()
 )
 async def create_log(
     payload: LogCreate,
-    ad: Indicator = Depends(retrieve_ad),
+    ad: Indicator = Depends(retrieve_indicator),
     log_manager: LogManager = Depends(get_log_manager),
 ) -> LogScheme:
     """Создать (прикрепить) изображение."""
@@ -52,14 +52,15 @@ async def create_log(
     },
 )
 async def update_log(
-    payload: LogCreate,
-    log: Log = Depends(retrieve_log),
-    log_manager: LogManager = Depends(get_log_manager),
+    # payload: LogCreate,
+    # log: Log = Depends(retrieve_log),
+    # log_manager: LogManager = Depends(get_log_manager),
 ) -> LogScheme:
     """Обновить изображение по имени или id."""
-    log = await log_manager.update(log=log, payload=payload.dict(exclude_unset=True, exclude_none=True))
-    resp = await LogScheme.from_orms(log)
-    return resp
+    ...
+    # log = await log_manager.update(log=log, payload=payload.dict(exclude_unset=True, exclude_none=True))
+    # resp = await LogScheme.from_orms(log)
+    # return resp
 
 
 @router.delete(
@@ -74,7 +75,7 @@ async def update_log(
     },
 )
 async def delete_log(
-    log: Log = Depends(retrieve_log),
+    # log: Log = Depends(retrieve_log),
     log_manager: LogManager = Depends(get_log_manager),
 ) -> None:
     """Удалить изображение по id."""

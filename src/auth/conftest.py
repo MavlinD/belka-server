@@ -136,34 +136,34 @@ class Routs:
         self.token_refresh = app.url_path_for("token_refresh")
         self.token_verify = app.url_path_for("token_verify")
 
-        self.create_ad = app.url_path_for("create_ad")
-        self.read_ads = app.url_path_for("read_ads")
+        self.create_indicator = app.url_path_for("create_indicator")
+        # self.read_indicators = app.url_path_for("read_indicators")
 
         self.read_home = app.url_path_for("read_home")
 
-    def request_update_image(self, image_attr: str | int) -> URL | str:
-        """обновление изображения"""
-        return self.app.url_path_for("update_image", image_attr=str(image_attr))
+    # def request_update_log(self, image_attr: str | int) -> URL | str:
+    #     """обновление элемента журнала"""
+    #     return self.app.url_path_for("update_log", image_attr=str(image_attr))
+    #
+    # def request_delete_log(self, image_attr: str | int) -> URL | str:
+    #     """удаление элемента журнала"""
+    #     return self.app.url_path_for("delete_log", image_attr=str(image_attr))
+    #
+    # def request_create_log(self, ad_attr: str | int) -> URL | str:
+    #     """создание элемента журнала"""
+    #     return self.app.url_path_for("create_log", ad_attr=ad_attr)
 
-    def request_delete_image(self, image_attr: str | int) -> URL | str:
-        """удаление изображения"""
-        return self.app.url_path_for("delete_image", image_attr=str(image_attr))
+    def request_read_indicator(self, ad_attr: str | int) -> URL | str:
+        """чтение показателя"""
+        return self.app.url_path_for("read_indicator", ad_attr=ad_attr)
 
-    def request_create_image(self, ad_attr: str | int) -> URL | str:
-        """создание изображения"""
-        return self.app.url_path_for("create_image", ad_attr=ad_attr)
+    def request_delete_indicator(self, ad_attr: str | int) -> URL | str:
+        """удаление показателя"""
+        return self.app.url_path_for("delete_indicator", ad_attr=str(ad_attr))
 
-    def request_read_ad(self, ad_attr: str | int) -> URL | str:
-        """чтение объявления"""
-        return self.app.url_path_for("read_ad", ad_attr=ad_attr)
-
-    def request_delete_ad(self, ad_attr: str | int) -> URL | str:
-        """удаление объявления"""
-        return self.app.url_path_for("delete_ad", ad_attr=str(ad_attr))
-
-    def request_to_update_ad(self, ad_attr: str | int) -> URL | str:
-        """обновление объявления"""
-        return self.app.url_path_for("update_ad", ad_attr=str(ad_attr))
+    def request_to_update_indicator(self, ad_attr: str | int) -> URL | str:
+        """обновление показателя"""
+        return self.app.url_path_for("update_indicator", ad_attr=str(ad_attr))
 
     def accept_verify_token(self, token: str) -> URL | str:
         return self.app.url_path_for("accept_verify_token", token=token)

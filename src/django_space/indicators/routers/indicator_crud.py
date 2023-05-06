@@ -1,3 +1,4 @@
+from asgiref.sync import sync_to_async
 from fastapi import Depends, status
 from fastapi_pagination import paginate as paginate_
 from fastapi_pagination.bases import AbstractPage
@@ -5,14 +6,18 @@ from logrich.logger_ import log  # noqa
 from pydantic import BaseModel
 
 from src.auth.assets import APIRouter
-from src.auth.schemas.indicators import IndicatorCreate, IndicatorScheme, IndicatorUpdate
+from src.auth.schemas.indicators import (
+    IndicatorCreate,
+    IndicatorScheme,
+    IndicatorUpdate,
+)
 from src.auth.schemas.scheme_tools import get_qset
-from src.auth.users.indicator_manager import IndicatorManager
 from src.auth.users.dependencies import get_current_active_user
+from src.auth.users.indicator_manager import IndicatorManager
 from src.auth.users.init import get_indicator_manager
-from src.django_space.indicators.models import Indicator
-from src.django_space.django_space.adapters import Page, retrieve_ad
+from src.django_space.django_space.adapters import Page, retrieve_indicator
 from src.django_space.django_space.routers.jwt_obtain import unauthorized_responses
+from src.django_space.indicators.models import Indicator
 
 router = APIRouter()
 
@@ -26,17 +31,18 @@ router = APIRouter()
         **unauthorized_responses,
     },
 )
-async def create_ad(
-    ad: IndicatorCreate,
-    ad_manager: IndicatorManager = Depends(get_indicator_manager),
+async def create_indicator(
+    indicator: IndicatorCreate,
+    indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> IndicatorScheme:
     """Создать или вернуть объявление"""
-    resp = await ad_manager.create(ad_create=ad)
-    return resp
+    resp = await indicator_manager.create(payload=indicator)
+    return await sync_to_async(IndicatorScheme.from_orm)(resp)
+    # return resp
 
 
 @router.patch(
-    "/{ad_attr:str}",
+    "/{indicator_attr:str}",
     response_model=IndicatorScheme,
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(get_current_active_user)],
@@ -44,13 +50,13 @@ async def create_ad(
         **unauthorized_responses,
     },
 )
-async def update_ad(
+async def update_indicator(
     payload: IndicatorUpdate,
-    ad: Indicator = Depends(retrieve_ad),
-    ad_manager: IndicatorManager = Depends(get_indicator_manager),
+    ad: Indicator = Depends(retrieve_indicator),
+    indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> IndicatorScheme:
     """Обновить объявление по имени или id"""
-    ad = await ad_manager.update(ad=ad, payload=payload.dict(exclude_unset=True, exclude_none=True))
+    ad = await indicator_manager.update(ind=ad, payload=payload.dict(exclude_unset=True, exclude_none=True))
     resp = await IndicatorScheme.from_orms(ad)
     return resp
 
@@ -63,25 +69,25 @@ async def update_ad(
         **unauthorized_responses,
     },
 )
-async def read_ads(
-    ad_manager: IndicatorManager = Depends(get_indicator_manager),
+async def reindicator_indicators(
+    indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> AbstractPage[BaseModel]:
     """Получить список объявлений"""
-    indicators = await ad_manager.get_list_ads()
+    indicators = await indicator_manager.get_list_indicators()
     resp = await get_qset(qset=indicators, model=IndicatorScheme)
     return paginate_(list(resp))
 
 
 @router.get(
-    "/{ad_attr:str}",
+    "/{indicator_attr:str}",
     response_model=IndicatorScheme,
     status_code=status.HTTP_200_OK,
     responses={
         **unauthorized_responses,
     },
 )
-async def read_ad(
-    ad: Indicator = Depends(retrieve_ad),
+async def reindicator_indicator(
+    ad: Indicator = Depends(retrieve_indicator),
 ) -> IndicatorScheme:
     """Получить объявление по имени или id"""
     resp = await IndicatorScheme.from_orms(ad)
@@ -89,7 +95,7 @@ async def read_ad(
 
 
 @router.delete(
-    "/{ad_attr:str}",
+    "/{indicator_attr:str}",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[Depends(get_current_active_user)],
     responses={
@@ -99,9 +105,9 @@ async def read_ad(
         },
     },
 )
-async def delete_ad(
-    ad: Indicator = Depends(retrieve_ad),
-    ad_manager: IndicatorManager = Depends(get_indicator_manager),
+async def delete_indicator(
+    ad: Indicator = Depends(retrieve_indicator),
+    indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> None:
     """Удалить объявление по id"""
-    await ad_manager.delete(ad)
+    await indicator_manager.delete(ad)
