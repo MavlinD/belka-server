@@ -35,10 +35,10 @@ async def create_indicator(
     indicator: IndicatorCreate,
     indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> IndicatorScheme:
-    """Создать или вернуть объявление"""
-    resp = await indicator_manager.create(payload=indicator)
-    return await sync_to_async(IndicatorScheme.from_orm)(resp)
-    # return resp
+    """Создать или вернуть показатель"""
+    ind = await indicator_manager.create(payload=indicator)
+    resp = await IndicatorScheme.from_orms(ind)
+    return resp
 
 
 @router.patch(
@@ -52,12 +52,12 @@ async def create_indicator(
 )
 async def update_indicator(
     payload: IndicatorUpdate,
-    ad: Indicator = Depends(retrieve_indicator),
+    ind: Indicator = Depends(retrieve_indicator),
     indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> IndicatorScheme:
-    """Обновить объявление по имени или id"""
-    ad = await indicator_manager.update(ind=ad, payload=payload.dict(exclude_unset=True, exclude_none=True))
-    resp = await IndicatorScheme.from_orms(ad)
+    """Обновить показатель по имени или id"""
+    ind = await indicator_manager.update(ind=ind, payload=payload)
+    resp = await IndicatorScheme.from_orms(ind)
     return resp
 
 
@@ -69,10 +69,10 @@ async def update_indicator(
         **unauthorized_responses,
     },
 )
-async def reindicator_indicators(
+async def read_indicators(
     indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> AbstractPage[BaseModel]:
-    """Получить список объявлений"""
+    """Получить список показателей"""
     indicators = await indicator_manager.get_list_indicators()
     resp = await get_qset(qset=indicators, model=IndicatorScheme)
     return paginate_(list(resp))
@@ -86,11 +86,11 @@ async def reindicator_indicators(
         **unauthorized_responses,
     },
 )
-async def reindicator_indicator(
-    ad: Indicator = Depends(retrieve_indicator),
+async def read_indicator(
+    ind: Indicator = Depends(retrieve_indicator),
 ) -> IndicatorScheme:
-    """Получить объявление по имени или id"""
-    resp = await IndicatorScheme.from_orms(ad)
+    """Получить показатель по имени или id"""
+    resp = await IndicatorScheme.from_orms(ind)
     return resp
 
 
@@ -109,5 +109,5 @@ async def delete_indicator(
     ad: Indicator = Depends(retrieve_indicator),
     indicator_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> None:
-    """Удалить объявление по id"""
+    """Удалить показатель по имени или id"""
     await indicator_manager.delete(ad)

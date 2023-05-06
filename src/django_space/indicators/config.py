@@ -13,12 +13,15 @@ class Settings(BaseSettings):
     Ad config settings
     """
 
+    OPEN_API_TAG_IND: str = "CRUD for Indicator"
+    OPEN_API_TAG_LOG: str = "CRUD for Log"
+
     # ограничения на имя показателя
     IND_NAME_MIN_LENGTH: int = 3
     IND_NAME_MAX_LENGTH: int = 200
 
     # ограничения на единицы измерения показателя
-    IND_UNIT_MIN_LENGTH: int = 3
+    IND_UNIT_MIN_LENGTH: int = 1
     IND_UNIT_MAX_LENGTH: int = 1000
 
     # ограничения на описание показателя

@@ -137,7 +137,7 @@ class Routs:
         self.token_verify = app.url_path_for("token_verify")
 
         self.create_indicator = app.url_path_for("create_indicator")
-        # self.read_indicators = app.url_path_for("read_indicators")
+        self.read_indicators = app.url_path_for("read_indicators")
 
         self.read_home = app.url_path_for("read_home")
 
@@ -149,21 +149,21 @@ class Routs:
     #     """удаление элемента журнала"""
     #     return self.app.url_path_for("delete_log", image_attr=str(image_attr))
     #
-    # def request_create_log(self, ad_attr: str | int) -> URL | str:
+    # def request_create_log(self, indicator_attr: str | int) -> URL | str:
     #     """создание элемента журнала"""
-    #     return self.app.url_path_for("create_log", ad_attr=ad_attr)
+    #     return self.app.url_path_for("create_log", indicator_attr=indicator_attr)
 
-    def request_read_indicator(self, ad_attr: str | int) -> URL | str:
+    def request_read_indicator(self, indicator_attr: str | int) -> URL | str:
         """чтение показателя"""
-        return self.app.url_path_for("read_indicator", ad_attr=ad_attr)
+        return self.app.url_path_for("read_indicator", indicator_attr=indicator_attr)
 
-    def request_delete_indicator(self, ad_attr: str | int) -> URL | str:
+    def request_delete_indicator(self, indicator_attr: str | int) -> URL | str:
         """удаление показателя"""
-        return self.app.url_path_for("delete_indicator", ad_attr=str(ad_attr))
+        return self.app.url_path_for("delete_indicator", indicator_attr=str(indicator_attr))
 
-    def request_to_update_indicator(self, ad_attr: str | int) -> URL | str:
+    def request_to_update_indicator(self, indicator_attr: str | int) -> URL | str:
         """обновление показателя"""
-        return self.app.url_path_for("update_indicator", ad_attr=str(ad_attr))
+        return self.app.url_path_for("update_indicator", indicator_attr=str(indicator_attr))
 
     def accept_verify_token(self, token: str) -> URL | str:
         return self.app.url_path_for("accept_verify_token", token=token)

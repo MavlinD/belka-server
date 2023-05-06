@@ -12,9 +12,9 @@ from src.django_space.indicators.models import Indicator, Log
 
 @pytest.fixture
 async def add_test_indicator(app: FastAPI) -> Indicator | HTTPException:
-    """Добавляет тестовое объявление в БД"""
-    ad = await create_indicator()
-    return ad
+    """Добавляет тестовый индикатор в БД"""
+    ind = await create_indicator()
+    return ind
 
 
 @pytest.fixture

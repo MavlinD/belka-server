@@ -29,9 +29,9 @@ class IndicatorManager:
         """Удалить показатель"""
         await self.objects.filter(pk=ind.pk).adelete()
 
-    async def get_one_by_uniq_attr(self, ind_attr: IndicatorAttr) -> Indicator | None:
+    async def get_one_by_uniq_attr(self, indicator_attr: IndicatorAttr) -> Indicator | None:
         """Получить показатель по уникальному атрибуту (pk, name)"""
-        attr = ind_attr.attr
+        attr = indicator_attr.attr
         if isinstance(attr, int) or attr.isdigit():
             ad_in_db = await self.objects.filter(pk=attr).afirst()
         else:
@@ -40,7 +40,7 @@ class IndicatorManager:
             raise IndicatorNotExists(ad=attr)
         return ad_in_db
 
-    async def get_list_ads(self) -> QuerySet:
+    async def get_list_indicators(self) -> QuerySet:
         """Вернёт список показателей"""
         indicators = await sync_to_async(self.objects.all)()
         return indicators

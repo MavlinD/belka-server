@@ -19,11 +19,11 @@ from src.django_space.indicators.models import Indicator, Log
 
 async def retrieve_indicator(
     indicator_attr: int = Path(
-        description="ID объявления",
+        description="ID или name показателя",
     ),
     indicators_manager: IndicatorManager = Depends(get_indicator_manager),
 ) -> Indicator:
-    """получить объявление"""
+    """получить показатель"""
     attr = IndicatorAttr(attr=indicator_attr)
     indicator: Indicator = await indicators_manager.get_one_by_uniq_attr(indicator_attr=attr)
     return indicator

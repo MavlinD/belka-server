@@ -7,6 +7,7 @@ from logrich.logger_assets import console
 from rich.style import Style
 from starlette.staticfiles import StaticFiles
 
+from src.django_space.indicators.config import config as indicators_config
 from src.auth.assets import get_project
 from src.auth.config import config
 from src.auth.handlers.errors.handlers import init_err_handlers
@@ -32,12 +33,12 @@ tags_metadata = [
         "description": "Всё для работы с **JWT**.",
     },
     {
-        "name": "CRUD for Ads",
-        "description": "Базовые операции с объявлениями.",
+        "name": indicators_config.OPEN_API_TAG_IND,
+        "description": "Базовые операции с показателями.",
     },
     {
-        "name": "CRUD for Images",
-        "description": "Базовые операции с изображениями.",
+        "name": indicators_config.OPEN_API_TAG_LOG,
+        "description": "Базовые операции с логами.",
     },
 ]
 
