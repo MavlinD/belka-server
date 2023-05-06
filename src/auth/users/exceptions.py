@@ -23,6 +23,12 @@ class IndicatorNotExists(FastAPIUsersException):
         self.status_code = status.HTTP_404_NOT_FOUND
 
 
+class IndicatorExists(FastAPIUsersException):
+    def __init__(self, indicator: str) -> None:
+        self.detail = f"Индикатор <{indicator}> существует"
+        self.status_code = status.HTTP_404_NOT_FOUND
+
+
 class LogNotExists(FastAPIUsersException):
     def __init__(self, image: str | int) -> None:
         self.detail = f"Изображение <{image}> не существует"

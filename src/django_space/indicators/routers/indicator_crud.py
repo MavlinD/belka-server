@@ -14,7 +14,11 @@ from src.auth.schemas.scheme_tools import get_qset
 from src.auth.users.dependencies import get_current_active_user
 from src.auth.users.indicator_manager import IndicatorManager
 from src.auth.users.init import get_indicator_manager
-from src.django_space.django_space.adapters import Page, retrieve_indicator
+from src.django_space.django_space.adapters import (
+    Page,
+    check_cant_exist_indicator,
+    retrieve_indicator,
+)
 from src.django_space.django_space.routers.jwt_obtain import unauthorized_responses
 from src.django_space.indicators.models import Indicator
 
@@ -25,7 +29,10 @@ router = APIRouter()
     "/create",
     response_model=IndicatorScheme,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(get_current_active_user)],
+    dependencies=[
+        Depends(get_current_active_user),
+        Depends(check_cant_exist_indicator),
+    ],
     responses={
         **unauthorized_responses,
     },

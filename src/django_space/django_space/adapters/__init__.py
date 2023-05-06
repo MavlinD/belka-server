@@ -5,7 +5,7 @@ from fastapi_pagination import Page
 from logrich.logger_ import log  # noqa
 from pydantic import Field
 
-from src.auth.schemas.indicators import IndicatorAttr
+from src.auth.schemas.indicators import IndicatorAttr, IndicatorCreate
 from src.auth.schemas.log import LogScheme
 from src.auth.schemas.scheme_tools import get_qset
 from src.auth.users.indicator_manager import IndicatorManager
@@ -27,6 +27,15 @@ async def retrieve_indicator(
     attr = IndicatorAttr(attr=indicator_attr)
     indicator: Indicator = await indicators_manager.get_one_by_uniq_attr(indicator_attr=attr)
     return indicator
+
+
+async def check_cant_exist_indicator(
+    indicator: IndicatorCreate,
+    indicator_manager: IndicatorManager = Depends(get_indicator_manager),
+) -> None:
+    """Проверяет отсутствие индикатора"""
+    attr = IndicatorAttr(attr=indicator.name)
+    await indicator_manager.check_one_by_uniq_attr(indicator_attr=attr)
 
 
 class LogLimitChecker:

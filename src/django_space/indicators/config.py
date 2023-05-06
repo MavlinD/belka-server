@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     # ограничения на единицы измерения показателя
     IND_UNIT_MIN_LENGTH: int = 1
-    IND_UNIT_MAX_LENGTH: int = 1000
+    IND_UNIT_MAX_LENGTH: int = 30
 
     # ограничения на описание показателя
     IND_DESC_MIN_LENGTH: int = 3
