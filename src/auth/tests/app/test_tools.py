@@ -1,5 +1,3 @@
-import decimal
-
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -57,5 +55,5 @@ async def create_log(val: float = 100, indicator_id: int = 1, uid: int = 1) -> L
     indicator = await Indicator.objects.filter(pk=indicator_id).afirst()
     user = await User.objects.filter(pk=uid).afirst()
     log_model = Log
-    log_ = await sync_to_async(log_model.objects.get_or_create)(indicator_id=indicator, val=val, uid=user)
+    log_ = await sync_to_async(log_model.objects.get_or_create)(indicator=indicator, val=val, user=user)
     return log_

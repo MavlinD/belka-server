@@ -17,15 +17,12 @@ class Indicator(models.Model):
     def __str__(self):
         return self.name
 
-    # def __repr__(self):
-    #     return self.name
-
 
 class Log(models.Model):
     """модель сущности лога, связь один ко многим с показателем и пользователем"""
 
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    indicator_id = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
     val = models.FloatField()
     date = models.DateTimeField(default=datetime.now)
 

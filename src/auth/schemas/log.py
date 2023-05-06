@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated
 
 from asgiref.sync import sync_to_async
+from django.contrib.auth.models import User
 from djantic import ModelSchema
 from fastapi import Body, Query
 from logrich.logger_ import log  # noqa
 from pydantic import BaseModel, Field
 
-from src.auth.schemas.indicators import IndicatorScheme
 from src.django_space.indicators.config import config
-from src.django_space.indicators.models import Indicator, Log
+from src.django_space.indicators.models import Indicator
 
 
 class LogCreate(BaseModel):
@@ -23,7 +23,9 @@ class LogCreate(BaseModel):
 
 
 @dataclass
-class LogGet:
+class LogGetQuery:
+    """Схема валидации параметров запроса логов"""
+
     indicator_attr = Annotated[
         str,
         Query(
@@ -35,39 +37,41 @@ class LogGet:
     date_end = Annotated[datetime, Query(description="Конец периода")]
 
 
-class LogGetPy(BaseModel):
+class LogGetDB(BaseModel):
+    """Схема валидации параметров запроса к БД"""
+
     indicator_id: str | None
     date_start: datetime | None
     date_end: datetime | None
 
 
-class IndicatorScheme2(ModelSchema):
-    """Схема для списка изображений."""
+class IndicatorInLog(ModelSchema):
+    """Схема для списка логов"""
 
     class Config:
         model = Indicator
-        # exclude = ["id", "name"]
         include = ["id", "unit", "name"]
-        # include = ["id", "unit", "name"]
+
+
+class UserInLog(ModelSchema):
+    """Схема для списка логов"""
+
+    class Config:
+        model = User
+        include = ["id", "username"]
 
 
 class LogScheme(BaseModel):
-    # class LogScheme(ModelSchema):
     """Общая схема лога"""
 
-    # indicator_set: list[IndicatorScheme2] = []
-    # indicator: IndicatorScheme2
-    val: Any
-    date: Any
-    indicator_id: IndicatorScheme2
-    # indicator_id: Any
+    id: int
+    val: float
+    date: datetime
+    user: UserInLog
+    indicator: IndicatorInLog
 
     class Config:
         orm_mode = True
-        # model = Log
-        # include = ["id", "val", "date", "indicator", "indicator_set"]
-        # include = ["id", "val", "date", "indicator_set"]
-        # include = ["id", "val", "date" ]
 
     @classmethod
     async def from_orms(cls, v):

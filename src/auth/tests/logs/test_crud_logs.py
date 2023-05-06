@@ -4,13 +4,11 @@ from typing import Callable
 import pytest
 from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
-from starlette import status
 
 from src.auth.conftest import Routs
-from src.django_space.indicators.config import config
 
-# skip = False
-skip = True
+skip = False
+# skip = True
 reason = "Temporary off"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 

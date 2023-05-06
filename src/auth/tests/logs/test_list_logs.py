@@ -22,15 +22,15 @@ async def test_list_log_with_paginate(client: AsyncClient, routes: Routs, user_a
     SIZE = 5
     PAGE = 1
     # return
-    # await insert_fake_indicators(amount_indicators=AMOUNT_INDICATORS)
+    await insert_fake_indicators(amount_indicators=AMOUNT_INDICATORS)
     await insert_fake_logs(amount_logs=AMOUNT_LOGS, amount_indicators=AMOUNT_INDICATORS)
 
-    params = {"page": PAGE, "size": SIZE, "indicator_attr": 1}
+    params = {"page": PAGE, "size": SIZE, "indicator_attr": 4}
 
     resp = await client.get(routes.read_logs, params=params)
     log.debug(resp)
     data = resp.json()
-    log.debug("логи с пагинацией-", o=data)
+    log.debug("логи с пагинацией", o=data)
     # assert resp.status_code == 200
     # assert data.get("total") == AMOUNT_ADS + 1
     # # assert len(data) == 2

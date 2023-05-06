@@ -1,4 +1,5 @@
 import asyncio
+import os
 import typing
 from typing import AsyncGenerator, Generator
 
@@ -20,6 +21,8 @@ from src.auth.config import config
 from src.auth.helpers.tools import print_endpoints, print_request
 from src.auth.tests.app.test_tools import create_user
 from src.main import run_app
+
+# os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "True")
 
 
 @pytest.hookimpl(tryfirst=True)
