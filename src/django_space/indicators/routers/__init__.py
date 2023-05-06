@@ -11,5 +11,5 @@ __version__ = config.API_VERSION
 
 def init_router(app: FastAPI) -> None:
     """order is important !!!"""
-    app.include_router(ad_crud, prefix=f"{prefix}{__version__}/indicators", tags=[indicators_config.OPEN_API_TAG_IND])
-    app.include_router(image_crud, prefix=f"{prefix}{__version__}/image", tags=[indicators_config.OPEN_API_TAG_LOG])
+    app.include_router(ad_crud, prefix=f"{prefix}{__version__}/indicator", tags=[indicators_config.OPEN_API_TAG_IND])
+    app.include_router(image_crud, prefix=f"{prefix}{__version__}/log", tags=[indicators_config.OPEN_API_TAG_LOG])

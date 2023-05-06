@@ -5,10 +5,10 @@ from src.django_space.indicators.models import Indicator, Log
 
 @admin.register(Log)
 class LogAdmin(admin.ModelAdmin):
-    list_display = ("uid", "ind_id", "val", "date")
-    list_filter = ("ind_id", "uid")
-    search_fields = ("ind_id", "uid")
-    ordering = ["date", "ind_id", "uid"]
+    list_display = ("uid", "indicator_id", "val", "date")
+    list_filter = ("indicator_id", "uid")
+    search_fields = ("indicator_id", "uid")
+    ordering = ["date", "indicator_id", "uid"]
 
 
 @admin.register(Indicator)

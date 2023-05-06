@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Callable
 
 import pytest
@@ -16,109 +17,61 @@ pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
 @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_create_image(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_image: Callable
+async def test_create_log(
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
 ) -> None:
     """Тест создания изображения"""
-    path_image = "test-image.png"
-    resp = await client.put(
-        routes.request_create_image(ad_attr=1),
-        json={"path": path_image, "is_main": True},
-        headers=user_active_auth_headers,
-    )
-    log.debug(resp)
-    data = resp.json()
-    log.debug("ответ на создание изображения..", o=data)
-    assert resp.status_code == 201
-    # пытаемся назначить следующее изображение главным
-    path_image = "test-image-next.png"
-    resp = await client.put(
-        routes.request_create_image(ad_attr=1),
-        json={"path": path_image, "is_main": True},
-        headers=user_active_auth_headers,
-    )
-    log.debug(resp)
-    data = resp.json()
-    log.debug("ответ на создание второго главного изображения", o=data)
-    assert resp.status_code == 400
-
-
-@pytest.mark.skipif(skip, reason=reason)
-@pytest.mark.asyncio
-async def test_create_ad_with_over_limit_images(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_ad: Callable
-) -> None:
-    """Тест прикрепления свыше лимита изображений."""
-    for image in range(0, config.IND_NAME_MAX_LENGTH + 2):
-        path_image = f"test-image-{image}.png"
-        resp = await client.put(
-            routes.request_create_image(ad_attr=1),
-            json={"path": path_image},
-            headers=user_active_auth_headers,
-        )
-        log.debug(resp)
-        data = resp.json()
-        log.debug("запрос тестового объявления по ID..", o=data)
-
-    resp = await client.get(routes.request_read_ad(ad_attr=1))
-    log.debug(resp)
-    data = resp.json()
-    log.debug("запрос тестового объявления по ID.", o=data)
-    assert len(data.get("image_set")) == 3
-
-
-@pytest.mark.skipif(skip, reason=reason)
-@pytest.mark.asyncio
-async def test_update_image(
-    client: AsyncClient,
-    routes: Routs,
-    user_active_auth_headers: Headers,
-    add_test_image: Callable,
-) -> None:
-    """Тест обновления изображения"""
-    name_image = "новое_изображение.png"
-    # return
-    resp = await client.patch(
-        routes.request_update_image(image_attr=1),
-        json={"path": name_image, "is_main": True},
-        headers=user_active_auth_headers,
-    )
-    log.debug(resp)
-    data = resp.json()
-    log.debug("ответ на обновление изображения.", o=data)
-    assert resp.status_code == status.HTTP_200_OK
-    assert data.get("path") == name_image
-    assert data.get("is_main") is True
-
-
-@pytest.mark.skipif(skip, reason=reason)
-@pytest.mark.asyncio
-async def test_delete_image(
-    client: AsyncClient,
-    routes: Routs,
-    user_active_auth_headers: Headers,
-    add_test_image: Callable,
-) -> None:
-    """Тест удаления изображения"""
-    name_image = config.TEST_AD_NAME
     # return
     resp = await client.put(
-        routes.request_create_image(ad_attr=1),
-        json={"path": name_image},
+        routes.request_create_log(indicator_attr=1),
+        json={"val": 50},
         headers=user_active_auth_headers,
     )
     log.debug(resp)
     data = resp.json()
-    log.debug("ответ на создание изображения", o=data)
+    log.debug("ответ на создание записи лога", o=data)
     assert resp.status_code == 201
-    resp = await client.delete(routes.request_delete_image(image_attr=2), headers=user_active_auth_headers)
-    assert resp.status_code == 204
-    resp = await client.get(
-        routes.request_read_ad(ad_attr=1),
+    # return
+    # уставновка произвольной даты-времени
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=1),
+        json={
+            "val": 50.23,
+            "date": "2022-5-06T07:40",  # ISO format
+        },
+        headers=user_active_auth_headers,
     )
     log.debug(resp)
     data = resp.json()
-    log.debug("список объявлений", o=data)
-    assert resp.status_code == 200
-    # должно остаться только одно изображение
-    assert len(data.get("image_set", [])) == 1
+    log.debug("ответ на создание лога с произвольной датой в виде строки", o=data)
+    assert resp.status_code == 201
+
+    # уставновка произвольной даты-времени
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=1),
+        json={
+            "val": 50.23,
+            # "date": "01.01.2022",
+            "date": "10 октября 2020",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание лога с произвольной датой в виде строки", o=data)
+    assert resp.status_code == 422
+
+    # уставновка произвольной даты-времени
+    dt_val = datetime.now().strftime("%Y-%m-%dT%H:%M")
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=1),
+        json={
+            "val": 50.23,
+            "date": dt_val,
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug(f"ответ на создание лога с произвольной датой в виде объекта даты-времени: {dt_val}", o=data)
+    assert resp.status_code == 201

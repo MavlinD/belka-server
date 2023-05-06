@@ -25,7 +25,7 @@ class Log(models.Model):
     """модель сущности лога, связь один ко многим с показателем и пользователем"""
 
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    ind_id = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+    indicator_id = models.ForeignKey(Indicator, on_delete=models.CASCADE)
     val = models.FloatField()
     date = models.DateTimeField(default=datetime.now)
 
@@ -33,5 +33,5 @@ class Log(models.Model):
         # https://docs.djangoproject.com/en/4.2/ref/models/options/#unique-together
         constraints = [
             # ограничим каждый показатель только одним значением в минуту
-            UniqueConstraint(fields=["ind_id", "date"], name="unique_log")
+            UniqueConstraint(fields=["indicator_id", "date"], name="unique_log")
         ]

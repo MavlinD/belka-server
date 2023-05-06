@@ -52,12 +52,10 @@ async def create_indicator(
     return ind
 
 
-async def create_log() -> Log:
-    # async def create_log(path: str = indicator_config.TEST_IMAGE_PATH, ads_id: int = 1, is_main: bool = False)
-    # -> Log:
-    """create ind"""
-    ...
-    # indicator = await Indicator.objects.filter(pk=ads_id).afirst()
-    # image_model = Log
-    # image = await sync_to_async(image_model.objects.get_or_create)(path=path, ads_id=indicator, is_main=is_main)
-    # return image
+async def create_log(val: float = 100, indicator_id: int = 1, uid: int = 1) -> Log:
+    """create log"""
+    indicator = await Indicator.objects.filter(pk=indicator_id).afirst()
+    user = await User.objects.filter(pk=uid).afirst()
+    log_model = Log
+    log_ = await sync_to_async(log_model.objects.get_or_create)(indicator_id=indicator, val=val, uid=user)
+    return log_

@@ -21,7 +21,7 @@ async def test_create_indicator(
     user_active_auth_headers: Headers,
     add_test_indicator: Callable,
 ) -> None:
-    """Тест НЕ возможности создания показателя"""
+    """Тест НЕ возможности создания показателя - ограничение на минимальную длину имени"""
     name_indicator = "ts"
     resp = await client.put(
         routes.create_indicator,
@@ -54,7 +54,7 @@ async def test_update_indicator(
     user_active_auth_headers: Headers,
     add_test_indicator: Callable,
 ) -> None:
-    """Тест НЕ возможности обновления показателя"""
+    """Тест НЕ возможности обновления показателя - уникальность имени"""
     name_indicator = config.TEST_IND_NAME
     data = {"name": name_indicator, "unit": "any/str" * 5, "desc": f"desc of ind {name_indicator}"}
     resp = await client.patch(
