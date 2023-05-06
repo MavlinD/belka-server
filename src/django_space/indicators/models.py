@@ -17,6 +17,9 @@ class Indicator(models.Model):
     def __str__(self):
         return self.name
 
+    # def __repr__(self):
+    #     return self.name
+
 
 class Log(models.Model):
     """модель сущности лога, связь один ко многим с показателем и пользователем"""

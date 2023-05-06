@@ -42,8 +42,8 @@ async def test_create_indicator(
     )
     log.debug(resp)
     data = resp.json()
-    log.debug("ответ на обновление показателя", o=data)
-    assert resp.status_code == 404
+    log.debug("ответ на обновление показателя - уже существует", o=data)
+    assert resp.status_code == 400
 
 
 @pytest.mark.skipif(skip, reason=reason)

@@ -19,6 +19,10 @@ from src.django_space.django_space.adapters import (
     check_cant_exist_indicator,
     retrieve_indicator,
 )
+from src.django_space.django_space.responses import (
+    obj_exist_responses,
+    obj_not_exist_responses,
+)
 from src.django_space.django_space.routers.jwt_obtain import unauthorized_responses
 from src.django_space.indicators.models import Indicator
 
@@ -35,6 +39,10 @@ router = APIRouter()
     ],
     responses={
         **unauthorized_responses,
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Показатель уже существует.",
+        },
+        **obj_exist_responses(obj="Индикатор"),
     },
 )
 async def create_indicator(
@@ -52,9 +60,7 @@ async def create_indicator(
     response_model=IndicatorScheme,
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(get_current_active_user)],
-    responses={
-        **unauthorized_responses,
-    },
+    responses={**unauthorized_responses, **obj_not_exist_responses(obj="Показатель")},
 )
 async def update_indicator(
     payload: IndicatorUpdate,
@@ -88,9 +94,7 @@ async def read_indicators(
     "/{indicator_attr:str}",
     response_model=IndicatorScheme,
     status_code=status.HTTP_200_OK,
-    responses={
-        **unauthorized_responses,
-    },
+    responses={**unauthorized_responses, **obj_not_exist_responses(obj="Показатель")},
 )
 async def read_indicator(
     indicator: Indicator = Depends(retrieve_indicator),
@@ -104,12 +108,7 @@ async def read_indicator(
     "/{indicator_attr:str}",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[Depends(get_current_active_user)],
-    responses={
-        **unauthorized_responses,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Показатель не найден.",
-        },
-    },
+    responses={**unauthorized_responses, **obj_not_exist_responses(obj="Показатель")},
 )
 async def delete_indicator(
     ad: Indicator = Depends(retrieve_indicator),

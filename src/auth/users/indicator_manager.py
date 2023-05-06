@@ -2,12 +2,7 @@ from asgiref.sync import sync_to_async
 from django.db.models import QuerySet
 from logrich.logger_ import errlog, log  # noqa
 
-from src.auth.schemas.indicators import (
-    IndicatorAttr,
-    IndicatorCreate,
-    IndicatorScheme,
-    IndicatorUpdate,
-)
+from src.auth.schemas.indicators import IndicatorAttr, IndicatorCreate, IndicatorUpdate
 from src.auth.users.exceptions import IndicatorExists, IndicatorNotExists
 from src.django_space.indicators.models import Indicator
 
@@ -48,7 +43,7 @@ class IndicatorManager:
             raise IndicatorNotExists(indicator=attr)
         return indicator_in_db
 
-    async def check_one_by_uniq_attr(self, indicator_attr: IndicatorAttr) -> Indicator | None:
+    async def check_one_by_uniq_attr(self, indicator_attr: IndicatorAttr) -> None:
         """Проверить существование показателя по уникальному атрибуту (pk, name)"""
 
         try:

@@ -26,7 +26,7 @@ class IndicatorNotExists(FastAPIUsersException):
 class IndicatorExists(FastAPIUsersException):
     def __init__(self, indicator: str) -> None:
         self.detail = f"Индикатор <{indicator}> существует"
-        self.status_code = status.HTTP_404_NOT_FOUND
+        self.status_code = status.HTTP_400_BAD_REQUEST
 
 
 class LogNotExists(FastAPIUsersException):
