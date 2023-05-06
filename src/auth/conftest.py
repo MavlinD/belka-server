@@ -22,7 +22,7 @@ from src.auth.helpers.tools import print_endpoints, print_request
 from src.auth.tests.app.test_tools import create_user
 from src.main import run_app
 
-# os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "True")
+os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "True")
 
 
 @pytest.hookimpl(tryfirst=True)

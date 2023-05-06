@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from dotenv import load_dotenv
 from logrich.logger_ import log  # noqa
-from pydantic import BaseSettings, Field
+from pydantic import BaseSettings
 
 load_dotenv()
 

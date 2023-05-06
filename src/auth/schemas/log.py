@@ -33,16 +33,16 @@ class LogGetQuery:
             max_length=config.IND_NAME_MAX_LENGTH,
         ),
     ]
-    date_start = Annotated[datetime, Query(description="Начало периода")]
-    date_end = Annotated[datetime, Query(description="Конец периода")]
+    date__gte = Annotated[datetime, Query(description="Начало периода")]
+    date__lte = Annotated[datetime, Query(description="Конец периода")]
 
 
 class LogGetDB(BaseModel):
     """Схема валидации параметров запроса к БД"""
 
     indicator_id: str | None
-    date_start: datetime | None
-    date_end: datetime | None
+    date__gte: datetime | None
+    date__lte: datetime | None
 
 
 class IndicatorInLog(ModelSchema):

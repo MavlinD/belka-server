@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -50,10 +52,10 @@ async def create_indicator(
     return ind
 
 
-async def create_log(val: float = 100, indicator_id: int = 1, uid: int = 1) -> Log:
+async def create_log(val: float = 100, indicator_id: int = 1, uid: int = 1, date: datetime = datetime.now()) -> Log:
     """create log"""
     indicator = await Indicator.objects.filter(pk=indicator_id).afirst()
     user = await User.objects.filter(pk=uid).afirst()
     log_model = Log
-    log_ = await sync_to_async(log_model.objects.get_or_create)(indicator=indicator, val=val, user=user)
+    log_ = await sync_to_async(log_model.objects.get_or_create)(indicator=indicator, val=val, user=user, date=date)
     return log_

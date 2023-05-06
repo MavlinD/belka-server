@@ -21,5 +21,6 @@ class LogManager:
 
     async def get_list_log(self, payload: LogGetDB) -> QuerySet:
         """Вернет список логов"""
-        logs = self.objects.all().filter(**payload.dict(exclude_none=True, exclude_unset=True))
+        data = payload.dict(exclude_none=True, exclude_unset=True)
+        logs = self.objects.all().filter(**data)
         return logs

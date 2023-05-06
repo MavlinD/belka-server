@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Callable
 
 import pytest
@@ -38,12 +39,15 @@ async def insert_fake_indicators(amount_indicators: int) -> None:
         )
 
 
-async def insert_fake_logs(amount_indicators: int, amount_logs: int) -> None:
+async def insert_fake_logs(
+    amount_indicators: int, amount_logs: int, date: datetime = datetime.now(), tdelta: timedelta = timedelta(days=3)
+) -> None:
     """fill db with fake data - Logs"""
     fake = Faker()
     for i in range(1, amount_logs):
-        val = fake.pyfloat(right_digits=3, min_value=0)
+        val = fake.pyfloat(right_digits=3, min_value=0, max_value=1000)
         indicator_id = fake.pyint(min_value=1, max_value=amount_indicators)
         # log.trace(indicator_id)
         uid = fake.pyint(min_value=1, max_value=2)
-        await create_log(val=val, indicator_id=indicator_id, uid=uid)
+        date += tdelta
+        await create_log(val=val, indicator_id=indicator_id, uid=uid, date=date)

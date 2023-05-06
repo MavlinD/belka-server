@@ -48,13 +48,12 @@ async def create_log(
 )
 async def read_logs(
     indicator_attr: LogGetQuery.indicator_attr = None,
-    date_start: LogGetQuery.date_start = None,
-    date_end: LogGetQuery.date_end = None,
+    date__gte: LogGetQuery.date__gte = None,
+    date__lte: LogGetQuery.date__lte = None,
     log_manager: LogManager = Depends(get_log_manager),
 ) -> AbstractPage[BaseModel]:
     """Получить список записей лога"""
-
-    payload = LogGetDB(indicator_id=indicator_attr, date_start=date_start, date_end=date_end)
+    payload = LogGetDB(indicator_id=indicator_attr, date__gte=date__gte, date__lte=date__lte)
     logs = await log_manager.get_list_log(payload=payload)
     resp = await get_qset(qset=logs, model=LogScheme)
     return paginate_(list(resp))
