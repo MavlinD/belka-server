@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import Callable
 
@@ -6,6 +7,8 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
+from src.auth.tests.app.test_tools import create_indicator
+from src.django_space.indicators.config import config as indicator_config
 
 skip = False
 # skip = True
@@ -13,12 +16,41 @@ reason = "Temporary off"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
 
+# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.asyncio
+async def test_create_log_from_arr(
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+) -> None:
+    """Тест создания лога из множества записей"""
+    # return
+    await create_indicator()
+    data = [
+        [indicator_config.TEST_IND_NAME, "100.23", "2023-5-06T07:40"],
+        [indicator_config.TEST_IND_NAME, "30.19", "2023-5-16T07:40"],
+        [indicator_config.TEST_IND_NAME, "760.75", "2023-5-23T12:10"],
+        # ["с", "760.75", "2023-5-23T12:10"],
+        # ["кальций", "42342.17", "ascac"],
+        # ["кальций", "fake", "2023-5-06T07:40"],
+        # ["r/sm", "760.75"],
+    ]
+    payload = {"data": data}
+    resp = await client.put(
+        routes.create_log_from_list,
+        json=payload,
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание записи лога", o=data)
+    # assert resp.status_code == 201
+
+
 @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_create_log(
     client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
 ) -> None:
-    """Тест создания изображения"""
+    """Тест создания лога"""
     # return
     resp = await client.put(
         routes.request_create_log(indicator_attr=1),
@@ -59,7 +91,7 @@ async def test_create_log(
     log.debug("ответ на создание лога с произвольной датой в виде строки", o=data)
     assert resp.status_code == 422
 
-    # уставновка произвольной даты-времени
+    # установка произвольной даты-времени
     dt_val = datetime.now().strftime("%Y-%m-%dT%H:%M")
     resp = await client.put(
         routes.request_create_log(indicator_attr=1),

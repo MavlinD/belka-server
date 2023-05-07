@@ -2,17 +2,38 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Any
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from djantic import ModelSchema
 from fastapi import Body, Query
 from logrich.logger_ import log  # noqa
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from src.django_space.indicators.config import config
 from src.django_space.indicators.models import Indicator
+
+
+class DataItem(BaseModel):
+    """Схема для валидации строки в массиве входящих на запись данных"""
+
+    name: Annotated[
+        str,
+        Field(title="Имя показателя", min_length=config.IND_NAME_MIN_LENGTH, max_length=config.IND_NAME_MAX_LENGTH),
+    ]
+    val: float
+    date: datetime
+
+
+class LogCreateFromList(BaseModel):
+    """Схема для создания записей лога"""
+
+    data: list[DataItem] = Body(title="Значения показателей, кортежи из трех полей")
+
+    @validator("data", pre=True, each_item=True)
+    def get_data(cls, val):
+        return DataItem(name=val[0], val=val[1], date=val[2])
 
 
 class LogCreate(BaseModel):

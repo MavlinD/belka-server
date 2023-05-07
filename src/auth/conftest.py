@@ -143,8 +143,11 @@ class Routs:
         self.create_indicator = app.url_path_for("create_indicator")
         self.read_indicators = app.url_path_for("read_indicators")
         self.read_logs = app.url_path_for("read_logs")
+        # создание элементов журнала списком
+        self.create_log_from_list = app.url_path_for("create_log_from_list")
 
         self.read_home = app.url_path_for("read_home")
+        self.read_me = app.url_path_for("get current user")
 
     # def request_update_log(self, image_attr: str | int) -> URL | str:
     #     """обновление элемента журнала"""

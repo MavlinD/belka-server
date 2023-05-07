@@ -40,6 +40,10 @@ tags_metadata = [
         "name": indicators_config.OPEN_API_TAG_LOG,
         "description": "Базовые операции с логами.",
     },
+    {
+        "name": "Me",
+        "description": "Информация о текущем пользователе.",
+    },
 ]
 
 
