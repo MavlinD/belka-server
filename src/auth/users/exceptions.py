@@ -30,9 +30,15 @@ class IndicatorExists(FastAPIUsersException):
 
 
 class LogNotExists(FastAPIUsersException):
-    def __init__(self, image: str | int) -> None:
-        self.detail = f"Изображение <{image}> не существует"
+    def __init__(self, log_: str | int) -> None:
+        self.detail = f"Изображение <{log_}> не существует"
         self.status_code = status.HTTP_404_NOT_FOUND
+
+
+class LogExists(FastAPIUsersException):
+    def __init__(self, log_: str | int) -> None:
+        self.detail = f"Log <{log_}> уже существует"
+        self.status_code = status.HTTP_400_BAD_REQUEST
 
 
 class UserInactive(FastAPIUsersException):

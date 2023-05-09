@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     def public_key_validator(cls, v: str) -> str:
         return get_key(key=v)
 
-    JWT_ACCESS_KEY_EXPIRES_TIME_MINUTES: int = 120
+    JWT_ACCESS_KEY_EXPIRES_TIME_MINUTES: int = 1200
     JWT_REFRESH_KEY_EXPIRES_TIME_DAYS: int = 30
     TOKEN_ISS: str
     TOKEN_AUDIENCE: str | list[str] | None

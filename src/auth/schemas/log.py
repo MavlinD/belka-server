@@ -40,7 +40,8 @@ class LogCreate(BaseModel):
     """Схема для создания записи лога"""
 
     val: float = Body(ge=0, title="Значение показателя")
-    date: Annotated[datetime, Field(title="Период регистрации")] = False
+    # по умолчанию исп-ся текущее значение даты-времени
+    date: Annotated[datetime, Field(title="Период регистрации")] = datetime.now()
 
 
 @dataclass

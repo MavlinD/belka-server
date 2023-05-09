@@ -32,3 +32,6 @@ class Log(models.Model):
             # ограничим каждый показатель только одним значением в минуту
             UniqueConstraint(fields=["indicator_id", "date"], name="unique_log")
         ]
+
+    def __str__(self):
+        return f"{self.indicator} {self.date} {self.val}"

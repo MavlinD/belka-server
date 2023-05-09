@@ -23,67 +23,113 @@ async def test_create_log_from_arr(
 ) -> None:
     """Тест создания лога из множества записей"""
     # return
-    await create_indicator()
-    data = [
-        [indicator_config.TEST_IND_NAME, "100.23", "2023-5-06T07:40"],
-        [indicator_config.TEST_IND_NAME, "30.19", "2023-5-16T07:40"],
-        [indicator_config.TEST_IND_NAME, "760.75", "2023-5-23T12:10"],
-        # ["с", "760.75", "2023-5-23T12:10"],
-        # ["кальций", "42342.17", "ascac"],
-        # ["кальций", "fake", "2023-5-06T07:40"],
-        # ["r/sm", "760.75"],
-    ]
-    payload = {"data": data}
     resp = await client.put(
-        routes.create_log_from_list,
-        json=payload,
+        routes.request_create_log(indicator_attr=1),
+        json={
+            "val": 50.23,
+            # "date": "01.01.2022",
+            "date": "2023-5-06T07:40",
+        },
         headers=user_active_auth_headers,
     )
     log.debug(resp)
     data = resp.json()
     log.debug("ответ на создание записи логов", o=data)
     assert resp.status_code == 201
-    # assert len(data.get("items")) == 3
-    # resp = await client.get(routes.read_logs, params={})
-    # log.debug(resp)
-    # data = resp.json()
-    # log.debug("логи с пагинацией", o=data)
-    # assert resp.status_code == 200
 
 
 # @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_create_log_from_arr_with_invalid_data(
+async def test_create_log_from_arr_with_unexist_indicator(
     client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
 ) -> None:
-    """Тест НЕ создания лога из множества записей, среди которых есть невалидные значения"""
+    """Тест создания лога с несуществующим показателем"""
     # return
-    await create_indicator()
-    data = [
-        [indicator_config.TEST_IND_NAME, "100.23", "2023-5-06T07:40"],
-        [indicator_config.TEST_IND_NAME, "30.19", "2023-5-16T07:40"],
-        [indicator_config.TEST_IND_NAME, "760.75", "2023-5-23T12:10"],
-        ["с", "760.75", "2023-5-23T12:10"],
-        # ["кальций", "42342.17", "ascac"],
-        # ["кальций", "fake", "2023-5-06T07:40"],
-        # ["r/sm", "760.75"],
-    ]
-    payload = {"data": data}
     resp = await client.put(
-        routes.create_log_from_list,
-        json=payload,
+        routes.request_create_log(indicator_attr="fake-ind"),
+        json={
+            "val": 50.23,
+            "date": "2023-5-06T07:40",
+        },
         headers=user_active_auth_headers,
     )
     log.debug(resp)
     data = resp.json()
-    log.debug("ответ на создание записи логов, создаётся всё или ничего", o=data)
-    assert resp.status_code == 422
-    resp = await client.get(routes.read_logs, params={})
+    log.debug("ответ на создание записи логов с несущ. показателем", o=data)
+    assert resp.status_code == 404
+
+
+# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.asyncio
+async def test_create_log_with_invalid_datatime(
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+) -> None:
+    """Тест НЕ создания лога с невалидным значением даты-воемени"""
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=1),
+        json={
+            "val": 50.232435,
+            "date": "2023-15-06T07:40",
+        },
+        headers=user_active_auth_headers,
+    )
     log.debug(resp)
     data = resp.json()
-    log.debug("логи с пагинацией", o=data)
-    assert resp.status_code == 200
-    assert len(data.get("items")) == 1
+    log.debug("ответ на создание невалидной записи лога", o=data)
+    assert resp.status_code == 422
+
+
+# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.asyncio
+async def test_create_log_with_invalid_val(
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+) -> None:
+    """Тест НЕ создания лога с невалидным значением показателя"""
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=1),
+        json={
+            "val": "fake val",
+            "date": "2023-5-06T07:40",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание невалидной записи лога", o=data)
+    assert resp.status_code == 422
+
+
+# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.asyncio
+async def test_create_duplicate_data(
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+) -> None:
+    """Тест НЕ создания дубля лога"""
+    dt_val = datetime.now().strftime("%Y-%m-%dT%H:%M")
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=indicator_config.TEST_IND_NAME),
+        json={
+            "val": indicator_config.TEST_LOG_VAL,
+            "date": dt_val,
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание дубликата записи логов", o=data)
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=indicator_config.TEST_IND_NAME),
+        json={
+            "val": indicator_config.TEST_LOG_VAL + 100,
+            "date": dt_val,
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание или обновление существующей записи логов", o=data)
+    assert resp.status_code == 201
+    assert data.get("val") == indicator_config.TEST_LOG_VAL + 100
 
 
 @pytest.mark.skipif(skip, reason=reason)
@@ -102,7 +148,6 @@ async def test_create_log(
     data = resp.json()
     log.debug("ответ на создание записи лога", o=data)
     assert resp.status_code == 201
-    # return
     # уставновка произвольной даты-времени
     resp = await client.put(
         routes.request_create_log(indicator_attr=1),

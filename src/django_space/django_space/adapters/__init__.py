@@ -18,7 +18,7 @@ from src.django_space.indicators.models import Indicator, Log
 
 
 async def retrieve_indicator(
-    indicator_attr: int = Path(
+    indicator_attr: str = Path(
         description="ID или name показателя",
     ),
     indicators_manager: IndicatorManager = Depends(get_indicator_manager),

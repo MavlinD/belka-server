@@ -28,10 +28,11 @@ class Settings(BaseSettings):
     IND_DESC_MIN_LENGTH: int = 3
     IND_DESC_MAX_LENGTH: int = 1000
 
-    # тестовое объявление
+    # тестовая запись лога
     TEST_IND_NAME: str = "Адамантий"
     TEST_IND_UNIT: str = "мг/см.куб"
     TEST_IND_DESC: str = "Подозрительный элемент"
+    TEST_LOG_VAL: float = 100.25
 
     class Config:
         env_file_encoding = "utf-8"

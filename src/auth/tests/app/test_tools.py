@@ -52,7 +52,9 @@ async def create_indicator(
     return ind
 
 
-async def create_log(val: float = 100, indicator_id: int = 1, uid: int = 1, date: datetime = datetime.now()) -> Log:
+async def create_log(
+    val: float = indicator_config.TEST_LOG_VAL, indicator_id: int = 1, uid: int = 1, date: datetime = datetime.now()
+) -> Log:
     """create log"""
     indicator = await Indicator.objects.filter(pk=indicator_id).afirst()
     user = await User.objects.filter(pk=uid).afirst()

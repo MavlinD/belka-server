@@ -18,25 +18,32 @@ from src.auth.users.init import get_log_manager
 from src.auth.users.log_manager import LogManager
 from src.django_space.django_space.adapters import Page, retrieve_indicator
 from src.django_space.django_space.routers.jwt_obtain import unauthorized_responses
-from src.django_space.indicators.models import Indicator
+from src.django_space.indicators.models import Indicator, Log
 
 router = APIRouter()
 
 
-@router.put(
-    "/list",
-    status_code=status.HTTP_201_CREATED,
-    responses={
-        **unauthorized_responses,
-    },
-)
-async def create_log_from_list(
-    payload: LogCreateFromList,
-    user: User = Depends(get_current_active_user),
-    log_manager: LogManager = Depends(get_log_manager),
-) -> None:
-    """Создать записи логов"""
-    await log_manager.create_all(payload=payload, user=user)
+# @router.put(
+#     "/list",
+#     status_code=status.HTTP_201_CREATED,
+#     # response_model=Page[LogScheme],
+#     responses={
+#         **unauthorized_responses,
+#     },
+# )
+# async def create_log_from_list(
+#     payload: LogCreateFromList,
+#     user: User = Depends(get_current_active_user),
+#     log_manager: LogManager = Depends(get_log_manager),
+# ) -> None:
+#     # ) -> AbstractPage[Log]:
+#     """Создать записи логов"""
+#     logs = await log_manager.create_all(payload=payload, user=user)
+#     # resp = await LogScheme.from_orms(logs)
+#
+#     # log.debug(logs)
+#     # return paginate_(resp)
+#     # return paginate_(logs)
 
 
 @router.put(
