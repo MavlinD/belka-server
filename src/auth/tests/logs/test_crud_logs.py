@@ -16,7 +16,7 @@ reason = "Temporary off"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_create_log_from_arr(
     client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
@@ -41,8 +41,49 @@ async def test_create_log_from_arr(
     )
     log.debug(resp)
     data = resp.json()
-    log.debug("ответ на создание записи лога", o=data)
-    # assert resp.status_code == 201
+    log.debug("ответ на создание записи логов", o=data)
+    assert resp.status_code == 201
+    # assert len(data.get("items")) == 3
+    # resp = await client.get(routes.read_logs, params={})
+    # log.debug(resp)
+    # data = resp.json()
+    # log.debug("логи с пагинацией", o=data)
+    # assert resp.status_code == 200
+
+
+# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.asyncio
+async def test_create_log_from_arr_with_invalid_data(
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+) -> None:
+    """Тест НЕ создания лога из множества записей, среди которых есть невалидные значения"""
+    # return
+    await create_indicator()
+    data = [
+        [indicator_config.TEST_IND_NAME, "100.23", "2023-5-06T07:40"],
+        [indicator_config.TEST_IND_NAME, "30.19", "2023-5-16T07:40"],
+        [indicator_config.TEST_IND_NAME, "760.75", "2023-5-23T12:10"],
+        ["с", "760.75", "2023-5-23T12:10"],
+        # ["кальций", "42342.17", "ascac"],
+        # ["кальций", "fake", "2023-5-06T07:40"],
+        # ["r/sm", "760.75"],
+    ]
+    payload = {"data": data}
+    resp = await client.put(
+        routes.create_log_from_list,
+        json=payload,
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание записи логов, создаётся всё или ничего", o=data)
+    assert resp.status_code == 422
+    resp = await client.get(routes.read_logs, params={})
+    log.debug(resp)
+    data = resp.json()
+    log.debug("логи с пагинацией", o=data)
+    assert resp.status_code == 200
+    assert len(data.get("items")) == 1
 
 
 @pytest.mark.skipif(skip, reason=reason)
