@@ -1,5 +1,7 @@
+import os
 from pathlib import Path
 
+import pygments.formatters
 from logrich.logger_ import errlog, log  # noqa
 
 from src.auth.config import config as fastapi_config
@@ -28,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "src.django_space.indicators.apps.IndicatorsConfig",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -118,3 +121,45 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
     "X-My-Header",
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "level": "DEBUG",
+        },
+    },
+}
+
+SHELL_PLUS = "bpython"
+# Truncate sql queries to this number of characters (this is the default)
+SHELL_PLUS_PRINT_SQL_TRUNCATE = 1000
+
+# Specify sqlparse configuration options when printing sql queries to the console
+SHELL_PLUS_SQLPARSE_FORMAT_KWARGS = dict(
+    reindent_aligned=True,
+    truncate_strings=500,
+)
+
+SHELL_PLUS_PYGMENTS_FORMATTER = pygments.formatters.TerminalFormatter
+SHELL_PLUS_PYGMENTS_FORMATTER_KWARGS = {}
+
+# print SQL queries in shell_plus
+SHELL_PLUS_PRINT_SQL = True
+
+SHELL_PLUS_IMPORTS = ["from logrich.logger_ import errlog, log", "from rich import inspect", "import rich"]

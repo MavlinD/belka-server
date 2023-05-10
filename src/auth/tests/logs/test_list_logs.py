@@ -3,48 +3,52 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
-from src.auth.tests.logs.conftest import insert_fake_indicators, insert_fake_logs
+from src.auth.tests.app.test_tools import create_indicator
 
-skip = False
-# skip = True
+# skip = False
+skip = True
 reason = "Temporary off"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
 
-@pytest.mark.skipif(skip, reason=reason)
+# @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_list_log_with_paginate(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
-    """Тест списка логов с пагинацией"""
-    AMOUNT_INDICATORS = 5
-    AMOUNT_LOGS = 30
+async def test_list_log_with_annotate(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
+    """Тест списка логов с агрегацией"""
     SIZE = 5
     PAGE = 1
-    INDICATOR_ATTR = 1
-    # return
-    await insert_fake_indicators(amount_indicators=AMOUNT_INDICATORS)
-    await insert_fake_logs(amount_logs=AMOUNT_LOGS, amount_indicators=AMOUNT_INDICATORS)
+    for ind in ["медь", "сера"]:
+        await create_indicator(name=ind, unit="гр", desc="---")
 
-    params = {"page": PAGE, "size": SIZE, "indicator_attr": INDICATOR_ATTR}
+    logs = [
+        ["медь", 100.23, "2023-5-06T07:40"],
+        ["медь", 30.19, "2023-5-16T07:40"],
+        ["медь", 260.75, "2023-5-23T12:10"],
+        ["медь", 760.75, "2023-5-23T12:10"],
+        # ----------------------------------
+        ["сера", 80.23, "2023-5-06T07:40"],
+        ["сера", 20.19, "2023-5-16T07:40"],
+        ["сера", 260.75, "2023-5-23T12:10"],
+        ["сера", 450.88, "2023-5-23T12:10"],
+    ]
+    for log_ in logs:
+        await client.put(
+            routes.request_create_log(indicator_attr=log_[0]),
+            json={
+                "val": log_[1],
+                "date": log_[2],
+            },
+            headers=user_active_auth_headers,
+        )
+
+    params = {"page": PAGE, "size": SIZE}
 
     resp = await client.get(routes.read_logs, params=params)
     log.debug(resp)
     data = resp.json()
-    log.debug("логи с пагинацией", o=data)
+    log.debug("логи с аггрегацией-", o=data)
     assert resp.status_code == 200
-    # отфильтруем рез-т по параметру запроса и сравним с общим кол-вом записей
-    filtered_items = [item for item in data.get("items") if item.get("indicator", {}).get("id") == INDICATOR_ATTR]
-    assert len(filtered_items) == len(data.get("items"))
-    # запрос с периодом
-    params = {
-        "page": PAGE,
-        "size": SIZE,
-        "date__gte": "2023-5-01T00:00",
-        "date__lte": "2023-5-31T23:59",
-        "indicator_attr": INDICATOR_ATTR,
-    }
-
-    resp = await client.get(routes.read_logs, params=params)
-    log.debug(resp)
-    data = resp.json()
-    log.debug("логи с пагинацией, запрос с периодом", o=data)
-    assert resp.status_code == 200
+    assert data.get("items")[0].get("min") == 30.19
+    assert data.get("items")[1].get("min") == 20.19
+    assert data.get("items")[0].get("avg") == 297.057
+    assert data.get("items")[1].get("avg") == 183.767

@@ -67,3 +67,8 @@ docker compose up api
 pytest -x
 # должно выполнится 25 тестов
 ```
+
+### Сервисные команды
+```shell
+p3 src/django_space/manage.py shell_plus --bpython
+```

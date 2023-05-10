@@ -3,6 +3,7 @@ from logrich.logger_ import log  # noqa
 from starlette import status
 
 from src.auth.schemas.token import UserScheme
+from src.django_space.indicators.models import Log
 
 
 class FastAPIUsersException(HTTPException):
@@ -36,7 +37,7 @@ class LogNotExists(FastAPIUsersException):
 
 
 class LogExists(FastAPIUsersException):
-    def __init__(self, log_: str | int) -> None:
+    def __init__(self, log_: Log) -> None:
         self.detail = f"Log <{log_}> уже существует"
         self.status_code = status.HTTP_400_BAD_REQUEST
 
@@ -52,7 +53,6 @@ class UserInactive(FastAPIUsersException):
 
 class InvalidVerifyToken(FastAPIUsersException):
     def __init__(self, msg: Exception | str | None = None) -> None:
-        # log.debug(msg)
         self.detail = f"Токен не валиден: {msg}"
         self.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 

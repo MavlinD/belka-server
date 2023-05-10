@@ -50,4 +50,4 @@ async def insert_fake_logs(
         # log.trace(indicator_id)
         uid = fake.pyint(min_value=1, max_value=2)
         date += tdelta
-        await create_log(val=val, indicator_id=indicator_id, uid=uid, date=date)
+        await create_log(val=val, indicator=indicator_id, uid=uid, date=date)

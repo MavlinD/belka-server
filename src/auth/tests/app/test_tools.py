@@ -53,10 +53,16 @@ async def create_indicator(
 
 
 async def create_log(
-    val: float = indicator_config.TEST_LOG_VAL, indicator_id: int = 1, uid: int = 1, date: datetime = datetime.now()
+    val: float = indicator_config.TEST_LOG_VAL,
+    indicator: str | int = 1,
+    uid: int = 1,
+    date: datetime | str = datetime.now(),
 ) -> Log:
     """create log"""
-    indicator = await Indicator.objects.filter(pk=indicator_id).afirst()
+    if isinstance(indicator, str) and indicator.isdigit():
+        indicator = await Indicator.objects.filter(pk=indicator).afirst()
+    else:
+        indicator = await Indicator.objects.filter(name=indicator).afirst()
     user = await User.objects.filter(pk=uid).afirst()
     log_model = Log
     log_ = await sync_to_async(log_model.objects.get_or_create)(indicator=indicator, val=val, user=user, date=date)

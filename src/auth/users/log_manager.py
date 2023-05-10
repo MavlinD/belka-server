@@ -1,13 +1,9 @@
-from datetime import datetime
-
-from asgiref.sync import async_to_sync, sync_to_async
 from django.contrib.auth.models import User
-from django.db.models import QuerySet
-from fastapi import HTTPException
+from django.db.models import Avg, F, Max, Min, QuerySet
+from django.db.models.functions import Round
 from logrich.logger_ import errlog, log  # noqa
 
-from src.auth.schemas.log import LogCreate, LogCreateFromList, LogGetDB
-from src.auth.users.exceptions import IndicatorNotExists, LogExists
+from src.auth.schemas.log import LogCreate, LogGetDB
 from src.django_space.indicators.models import Indicator, Log
 
 
@@ -30,8 +26,13 @@ class LogManager:
         )
         return log_
 
-    async def get_list_log(self, payload: LogGetDB) -> QuerySet:
+    @staticmethod
+    async def get_list_log(payload: LogGetDB) -> QuerySet:
         """Вернет список логов"""
         data = payload.dict(exclude_none=True, exclude_unset=True)
-        logs = self.objects.all().filter(**data)
+        logs = (
+            Log.objects.filter(**data)
+            .values(indicator_name=F("indicator__name"))
+            .annotate(max=Round(Max("val"), 3), min=Round(Min("val"), 3), avg=Round(Avg("val"), 3))
+        )
         return logs
