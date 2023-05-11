@@ -4,8 +4,9 @@ services:
 
   db:
 
-    hostname: $CONTAINER_NAME-db${SUFFIX:?err}
-    container_name: $CONTAINER_NAME-db${SUFFIX:?err}
+    container_name: db${SUFFIX:?err}
+    hostname: db${SUFFIX:?err}
+
     restart: unless-stopped
 
     tty: true

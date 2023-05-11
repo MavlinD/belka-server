@@ -1,8 +1,10 @@
+from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from fastapi import Depends, status
 from fastapi_pagination import paginate as paginate_
 from fastapi_pagination.bases import AbstractPage
 from logrich.logger_ import log  # noqa
+from pydantic import BaseModel
 
 from src.auth.assets import APIRouter
 from src.auth.schemas.log import (
@@ -12,6 +14,8 @@ from src.auth.schemas.log import (
     LogGetQuery,
     LogScheme,
 )
+from src.auth.schemas.scheme_tools import get_qset_base
+from src.auth.schemas.token import UserScheme
 from src.auth.users.dependencies import get_current_active_user
 from src.auth.users.init import get_log_manager
 from src.auth.users.log_manager import LogManager
@@ -50,9 +54,26 @@ async def read_logs(
     indicator_attr: LogGetQuery.indicator_attr = None,
     date__gte: LogGetQuery.date__gte = None,
     date__lte: LogGetQuery.date__lte = None,
+    user: UserScheme = Depends(get_current_active_user),
     log_manager: LogManager = Depends(get_log_manager),
-) -> AbstractPage[LogAnnotate]:
+) -> AbstractPage[BaseModel]:
     """Получить список записей лога"""
-    payload = LogGetDB(indicator_id=indicator_attr, date__gte=date__gte, date__lte=date__lte)
+    payload = LogGetDB(indicator_id=indicator_attr, date__gte=date__gte, date__lte=date__lte, user=user)
     logs = await log_manager.get_list_log(payload=payload)
-    return paginate_(list(logs))
+    resp = await get_qset_base(qset=logs)
+    return paginate_(list(resp))
+
+
+@router.get(
+    "/data-datetime-range",
+    response_model=list,
+    status_code=status.HTTP_200_OK,
+    responses={**unauthorized_responses},
+)
+async def get_data_datetime_range(
+    user: User = Depends(get_current_active_user),
+    log_manager: LogManager = Depends(get_log_manager),
+) -> list:
+    """Получить список записей лога"""
+    logs = await log_manager.get_data_datetime_range(user=user)
+    return await sync_to_async(list)(logs)

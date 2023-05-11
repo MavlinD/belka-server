@@ -44,6 +44,10 @@ class LogGetDB(BaseModel):
     indicator_id: str | None
     date__gte: datetime | None
     date__lte: datetime | None
+    user: User
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class LogAnnotate(BaseModel):

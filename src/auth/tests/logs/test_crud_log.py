@@ -7,7 +7,6 @@ from httpx import AsyncClient, Headers
 from logrich.logger_ import log  # noqa
 
 from src.auth.conftest import Routs
-from src.auth.tests.app.test_tools import create_indicator
 from src.django_space.indicators.config import config as indicator_config
 
 skip = False
@@ -18,11 +17,20 @@ pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
 @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_create_log_from_arr(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
-) -> None:
+async def test_create_log_from_arr(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
     """Тест создания лога из множества записей"""
-    # return
+    resp = await client.put(
+        routes.create_indicator,
+        json={
+            "name": indicator_config.TEST_IND_NAME,
+            "unit": "кг",
+            "desc": f"desc of ind {indicator_config.TEST_IND_NAME}",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание показателя", o=data)
     resp = await client.put(
         routes.request_create_log(indicator_attr=1),
         json={
@@ -38,13 +46,24 @@ async def test_create_log_from_arr(
     assert resp.status_code == 201
 
 
-# @pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_create_log_from_arr_with_unexist_indicator(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers
 ) -> None:
     """Тест создания лога с несуществующим показателем"""
-    # return
+    resp = await client.put(
+        routes.create_indicator,
+        json={
+            "name": indicator_config.TEST_IND_NAME,
+            "unit": "кг",
+            "desc": f"desc of ind {indicator_config.TEST_IND_NAME}",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание показателя", o=data)
     resp = await client.put(
         routes.request_create_log(indicator_attr="fake-ind"),
         json={
@@ -62,11 +81,24 @@ async def test_create_log_from_arr_with_unexist_indicator(
 # @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_create_log_with_invalid_datatime(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers
 ) -> None:
     """Тест НЕ создания лога с невалидным значением даты-воемени"""
     resp = await client.put(
-        routes.request_create_log(indicator_attr=1),
+        routes.create_indicator,
+        json={
+            "name": indicator_config.TEST_IND_NAME,
+            "unit": "кг",
+            "desc": f"desc of ind {indicator_config.TEST_IND_NAME}",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание показателя", o=data)
+
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=indicator_config.TEST_IND_NAME),
         json={
             "val": 50.232435,
             "date": "2023-15-06T07:40",
@@ -82,11 +114,24 @@ async def test_create_log_with_invalid_datatime(
 # @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
 async def test_create_log_with_invalid_val(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
+    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers
 ) -> None:
     """Тест НЕ создания лога с невалидным значением показателя"""
     resp = await client.put(
-        routes.request_create_log(indicator_attr=1),
+        routes.create_indicator,
+        json={
+            "name": indicator_config.TEST_IND_NAME,
+            "unit": "кг",
+            "desc": f"desc of ind {indicator_config.TEST_IND_NAME}",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание показателя", o=data)
+
+    resp = await client.put(
+        routes.request_create_log(indicator_attr=indicator_config.TEST_IND_NAME),
         json={
             "val": "fake val",
             "date": "2023-5-06T07:40",
@@ -101,10 +146,21 @@ async def test_create_log_with_invalid_val(
 
 # @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_create_duplicate_data(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
-) -> None:
+async def test_create_duplicate_data(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
     """Тест НЕ создания дубля лога"""
+    resp = await client.put(
+        routes.create_indicator,
+        json={
+            "name": indicator_config.TEST_IND_NAME,
+            "unit": "кг",
+            "desc": f"desc of ind {indicator_config.TEST_IND_NAME}",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание показателя", o=data)
+
     dt_val = datetime.now().strftime("%Y-%m-%dT%H:%M")
     resp = await client.put(
         routes.request_create_log(indicator_attr=indicator_config.TEST_IND_NAME),
@@ -134,11 +190,20 @@ async def test_create_duplicate_data(
 
 @pytest.mark.skipif(skip, reason=reason)
 @pytest.mark.asyncio
-async def test_create_log(
-    client: AsyncClient, routes: Routs, user_active_auth_headers: Headers, add_test_log: Callable
-) -> None:
+async def test_create_log(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
     """Тест создания лога"""
-    # return
+    resp = await client.put(
+        routes.create_indicator,
+        json={
+            "name": indicator_config.TEST_IND_NAME,
+            "unit": "кг",
+            "desc": f"desc of ind {indicator_config.TEST_IND_NAME}",
+        },
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("ответ на создание показателя", o=data)
     resp = await client.put(
         routes.request_create_log(indicator_attr=1),
         json={"val": 50},

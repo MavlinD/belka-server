@@ -22,7 +22,7 @@ from src.auth.helpers.tools import print_endpoints, print_request
 from src.auth.tests.app.test_tools import create_user
 from src.main import run_app
 
-os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "True")
+# os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "True")
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -139,24 +139,15 @@ class Routs:
         self.token_refresh = app.url_path_for("token_refresh")
         self.token_verify = app.url_path_for("token_verify")
 
-        # self.create_log = app.url_path_for("create_log")
         self.create_indicator = app.url_path_for("create_indicator")
         self.read_indicators = app.url_path_for("read_indicators")
         self.read_logs = app.url_path_for("read_logs")
-        # создание элементов журнала списком
-        # self.create_log_from_list = app.url_path_for("create_log_from_list")
+        # получить периоды регистрации
+        self.get_data_datetime_range = app.url_path_for("get_data_datetime_range")
 
         self.read_home = app.url_path_for("read_home")
         self.read_me = app.url_path_for("get current user")
 
-    # def request_update_log(self, image_attr: str | int) -> URL | str:
-    #     """обновление элемента журнала"""
-    #     return self.app.url_path_for("update_log", image_attr=str(image_attr))
-    #
-    # def request_delete_log(self, image_attr: str | int) -> URL | str:
-    #     """удаление элемента журнала"""
-    #     return self.app.url_path_for("delete_log", image_attr=str(image_attr))
-    #
     def request_create_log(self, indicator_attr: str | int) -> URL | str:
         """создание элемента журнала"""
         return self.app.url_path_for("create_log", indicator_attr=indicator_attr)

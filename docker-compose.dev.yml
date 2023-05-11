@@ -14,8 +14,6 @@ services:
   db:
     build:
       dockerfile: db/Dockerfile
-      args:
-        BASE_IMAGE: $IMAGE_DB_BASE
 
     ports:
         - "${PG_PORT_EXTERNAL}:5432/tcp"

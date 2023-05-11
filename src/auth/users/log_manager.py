@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Avg, F, Max, Min, QuerySet
+from django.db.models import Avg, Count, F, Max, Min, QuerySet
 from django.db.models.functions import Round
 from logrich.logger_ import errlog, log  # noqa
 
@@ -14,7 +14,6 @@ class LogManager:
 
     async def create(self, payload: LogCreate, indicator: Indicator, user: User) -> Log:
         """Вернуть или создать запись лога"""
-
         log_, _ = await self.objects.aupdate_or_create(
             indicator=indicator,
             date=payload.date,
@@ -35,4 +34,10 @@ class LogManager:
             .values(indicator_name=F("indicator__name"))
             .annotate(max=Round(Max("val"), 3), min=Round(Min("val"), 3), avg=Round(Avg("val"), 3))
         )
+        return logs
+
+    @staticmethod
+    async def get_data_datetime_range(user: User) -> QuerySet:
+        """Вернет периоды регистрации показателей в разрезе год-месяц"""
+        logs = Log.objects.filter(user=user).datetimes("date", "month").annotate(Count("id"))
         return logs

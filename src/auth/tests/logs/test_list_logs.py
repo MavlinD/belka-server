@@ -5,8 +5,8 @@ from logrich.logger_ import log  # noqa
 from src.auth.conftest import Routs
 from src.auth.tests.app.test_tools import create_indicator
 
-# skip = False
-skip = True
+skip = False
+# skip = True
 reason = "Temporary off"
 pytestmark = pytest.mark.django_db(transaction=True, reset_sequences=True)
 
@@ -43,12 +43,46 @@ async def test_list_log_with_annotate(client: AsyncClient, routes: Routs, user_a
 
     params = {"page": PAGE, "size": SIZE}
 
-    resp = await client.get(routes.read_logs, params=params)
+    resp = await client.get(routes.read_logs, params=params, headers=user_active_auth_headers)
     log.debug(resp)
     data = resp.json()
-    log.debug("логи с аггрегацией-", o=data)
+    log.debug("логи с аггрегацией--", o=data)
     assert resp.status_code == 200
     assert data.get("items")[0].get("min") == 30.19
     assert data.get("items")[1].get("min") == 20.19
     assert data.get("items")[0].get("avg") == 297.057
     assert data.get("items")[1].get("avg") == 183.767
+
+
+@pytest.mark.skipif(skip, reason=reason)
+@pytest.mark.asyncio
+async def test_get_data_datetime_range(client: AsyncClient, routes: Routs, user_active_auth_headers: Headers) -> None:
+    """Тест получить периоды регистрации"""
+    for ind in ["медь", "сера"]:
+        await create_indicator(name=ind, unit="гр", desc="---")
+
+    logs = [
+        ["медь", 100.23, "2020-5-06T07:40"],
+        ["медь", 30.19, "2021-5-16T07:40"],
+        ["медь", 260.75, "2022-5-23T12:10"],
+        ["медь", 760.75, "2023-5-23T12:10"],
+    ]
+    for log_ in logs:
+        await client.put(
+            routes.request_create_log(indicator_attr=log_[0]),
+            json={
+                "val": log_[1],
+                "date": log_[2],
+            },
+            headers=user_active_auth_headers,
+        )
+
+    resp = await client.get(
+        routes.get_data_datetime_range,
+        headers=user_active_auth_headers,
+    )
+    log.debug(resp)
+    data = resp.json()
+    log.debug("логи с аггрегацией-", o=data)
+    assert resp.status_code == 200
+    assert len(data) == 4
